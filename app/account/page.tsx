@@ -3,11 +3,9 @@ import { cookies } from 'next/headers'
 import { Database } from '@/types/supabase'
 import AccountForm from './account-form'
 import { cache } from 'react'
+import MainNav from '@/components/main-nav'
+import { createServerSupabaseClient } from '@/lib/utils'
 
-const createServerSupabaseClient = cache(() => {
-    const cookieStore = cookies()
-    return createServerComponentClient({ cookies: () => cookieStore })
-})
 
 export default async function Account() {
   const supabase = createServerSupabaseClient();
@@ -16,5 +14,15 @@ export default async function Account() {
     data: { session },
   } = await supabase.auth.getSession()
 
-  return <AccountForm session={session} />
+  return (
+    <div>
+        <div className='w-100'>
+            <MainNav session={session}></MainNav>
+        </div>
+        <div className='mt-5'>
+            <AccountForm session={session} />
+        </div>
+    </div>
+  )
+  
 }

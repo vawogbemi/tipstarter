@@ -10,11 +10,11 @@ export default function AuthForm() {
   return (
     <Auth
       supabaseClient={supabase}
-      view="magic_link"
+      onlyThirdPartyProviders={true}
       appearance={{ theme: ThemeSupa }}
       theme="dark"
       showLinks={false}
-      providers={[]}
+      providers={['google']}
       redirectTo="http://localhost:3000/auth/callback"
     />
   )
