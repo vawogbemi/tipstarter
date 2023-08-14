@@ -3,7 +3,7 @@ import { TipLink } from '@tiplink/api'
 import AuthForm from './auth-form'
 import Feed from '@/components/feed'
 import { Button } from '@/components/ui/button';
-import { createServerSupabaseClient } from '@/lib/utils';
+import { createServerSupabaseClient } from '@/lib/supabaseUtils';
 
 
 
@@ -15,7 +15,7 @@ export default async function Home() {
     data: { session },
   } = await supabase.auth.getSession()
 
-  console.log(session?.user.user_metadata)
+  //console.log(session?.user.user_metadata)
 
   const getPublicKeyString = async (link_string: string) => {
     const tiplink = await TipLink.fromLink(link_string);
@@ -24,14 +24,14 @@ export default async function Home() {
 
   const tp = "https://tiplink.io/i#238AKcwZdwit8vDmR"
 
-
+  const props = {name:"My Projects"}
   return (
-    <div className="row">
-        <div className="w-100">
+    <div>
+        <div>
           <MainNav session={session}/>
         </div>
       <div className='mt-5'>
-        <Feed />
+        <Feed name={"Feed"} />
       </div>
     </div>
   )

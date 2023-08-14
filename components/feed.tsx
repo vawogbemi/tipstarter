@@ -1,6 +1,6 @@
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card"
 
-export default function Feed() {
+export default function Feed({ name }: { name: string | null }) {
     const projects: Object = {
         "1": "one",
         "2": "two",
@@ -11,8 +11,8 @@ export default function Feed() {
     }
     return (
         <div>
-            <h1 className="text-3xl font-helvetica pl-5">Feed</h1>
-            <div className="flex flex-wrap justify-around content-between gap-2 md:gap-5 lg:gap-10 mt-5">
+            <h1 className="text-3xl font-helvetica pl-5">{name}</h1>
+            <div className="flex flex-wrap justify-around content-between gap-10 md:gap-10 lg:gap-10 mt-5">
                 {
                     Object.entries(projects)
                         .map(([key, value]) => (<Card className="w-[300px] md:w-[400px] lg:w-[500px]">
