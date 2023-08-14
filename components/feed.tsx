@@ -15,7 +15,7 @@ export default function Feed({ name }: { name: string | null }) {
             <div className="flex flex-wrap justify-around content-between gap-10 md:gap-10 lg:gap-10 mt-5">
                 {
                     Object.entries(projects)
-                        .map(([key, value]) => (<Card className="w-[300px] md:w-[400px] lg:w-[500px]">
+                        .map(([key, value]) => (<Card className="w-[300px] md:w-[400px] lg:w-[500px]" key={key}>
                             <CardHeader>
                                 <CardTitle>{key}</CardTitle>
                                 <CardDescription>{value}</CardDescription>
