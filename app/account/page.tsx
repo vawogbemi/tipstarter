@@ -4,7 +4,7 @@ import { Database } from '@/types/supabase'
 import AccountForm from './account-form'
 import { cache } from 'react'
 import MainNav from '@/components/main-nav'
-import { createServerSupabaseClient } from '@/lib/utils'
+import { createServerSupabaseClient } from '@/lib/supabaseUtils'
 
 
 export default async function Account() {
