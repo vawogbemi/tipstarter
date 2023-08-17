@@ -1,8 +1,5 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
-import { Database } from '@/types/supabase'
 import AccountForm from './account-form'
-import { cache } from 'react'
 import MainNav from '@/components/main-nav'
 import { createServerSupabaseClient } from '@/lib/supabaseUtils'
 

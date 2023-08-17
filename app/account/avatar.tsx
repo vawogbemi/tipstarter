@@ -16,10 +16,10 @@ export default function Avatar({
   size: number
   onUpload: (url: string) => void
 }) {
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createClientComponentClient<Database>({supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!, supabaseKey:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!});
+ 
   const [avatarUrl, setAvatarUrl] = useState<Profiles['avatar_url']>(url)
   const [uploading, setUploading] = useState(false)
-
   useEffect(() => {
     async function downloadImage(path: string) {
       try {
@@ -49,7 +49,8 @@ export default function Avatar({
       const file = event.target.files[0]
       const fileExt = file.name.split('.').pop()
       const filePath = `${uid}-${Math.random()}.${fileExt}`
-
+      console.log(file)
+      console.log(filePath)
       let { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file)
 
       if (uploadError) {

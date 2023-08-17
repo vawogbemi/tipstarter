@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { createServerSupabaseClient } from "@/lib/supabaseUtils"
 import Link from "next/link"
 
-export default async function Home() {
+export default async function MyProjects() {
 
     const supabase = createServerSupabaseClient()
   
@@ -29,7 +29,7 @@ export default async function Home() {
                     </Link>
                 </div>
             </div>
-            <div className="c">
+            <div className="mt-10">
                 <Feed name={""}/>
             </div>
         </div>
