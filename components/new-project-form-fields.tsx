@@ -22,6 +22,7 @@ export function ProjectFormFields({ form }: { form: UseFormReturn<{
         name: string;
         picture: string;
         description: string;
+        price: number;
     }[] | undefined;
 }, any, undefined> }) {
     return (
@@ -87,6 +88,7 @@ export function CollectionFormFields({ form }: { form: UseFormReturn<{
         name: string;
         picture: string;
         description: string;
+        price: number;
     }[] | undefined;
 }, any, undefined> }) {
     return (
@@ -152,6 +154,7 @@ export function NFTFormFields({ form, instance}: { form: UseFormReturn<{
         name: string;
         picture: string;
         description: string;
+        price: number;
     }[] | undefined;
 }, any, undefined>, instance:number }){
     return (
@@ -162,6 +165,20 @@ export function NFTFormFields({ form, instance}: { form: UseFormReturn<{
                 render={({ field }) => (
                     <FormItem className="w-96 mt-5">
                         <FormLabel>NFT Name</FormLabel>
+                        <FormControl>
+                            <Input placeholder="shadcn" {...field} />
+                        </FormControl>
+                        <FormDescription>This is your public display name.</FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+             <FormField
+                control={form.control}
+                name={`nfts.${instance}.price`}
+                render={({ field }) => (
+                    <FormItem className="w-96">
+                        <FormLabel>NFT Price</FormLabel>
                         <FormControl>
                             <Input placeholder="shadcn" {...field} />
                         </FormControl>

@@ -49,6 +49,7 @@ export default function ProjectForm() {
         nfts: z.array(
             z.object({
                 name: rewards ? z.string().min(2).max(50) : z.string(),
+                price: rewards ? z.coerce.number() : z.coerce.number(), //not adding min for demo purposes
                 picture: z.string(),
                 description: rewards ? z.string().min(2).max(500) : z.string(),
             })
