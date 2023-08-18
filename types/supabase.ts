@@ -52,6 +52,7 @@ export interface Database {
           nft_image: string | null
           nft_name: string | null
           nft_price: number | null
+          project_id: number | null
         }
         Insert: {
           collection_id?: number | null
@@ -61,6 +62,7 @@ export interface Database {
           nft_image?: string | null
           nft_name?: string | null
           nft_price?: number | null
+          project_id?: number | null
         }
         Update: {
           collection_id?: number | null
@@ -70,12 +72,19 @@ export interface Database {
           nft_image?: string | null
           nft_name?: string | null
           nft_price?: number | null
+          project_id?: number | null
         }
         Relationships: [
           {
             foreignKeyName: "nfts_collection_id_fkey"
             columns: ["collection_id"]
             referencedRelation: "nft_collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nfts_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           }
         ]
@@ -126,6 +135,7 @@ export interface Database {
           project_image: string | null
           project_name: string | null
           project_num_supporters: number | null
+          project_tiplink: string | null
           updated_at: string
         }
         Insert: {
@@ -139,6 +149,7 @@ export interface Database {
           project_image?: string | null
           project_name?: string | null
           project_num_supporters?: number | null
+          project_tiplink?: string | null
           updated_at?: string
         }
         Update: {
@@ -152,6 +163,7 @@ export interface Database {
           project_image?: string | null
           project_name?: string | null
           project_num_supporters?: number | null
+          project_tiplink?: string | null
           updated_at?: string
         }
         Relationships: [

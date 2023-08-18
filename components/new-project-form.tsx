@@ -11,6 +11,7 @@ import { useState } from "react"
 import { CollectionFormFields, NFTFormFields, ProjectFormFields } from "./new-project-form-fields"
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/types/supabase'
+import { TipLink } from "@tiplink/api"
 
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
@@ -102,6 +103,10 @@ export default function ProjectForm() {
         const projectImagePath = `${values.project.name}-${userId}.${projectImageExt}`
 
         let { error: projectImageError } = await supabase.storage.from('projects').upload(projectImagePath, imageCache.project.image)
+        
+        const [tiplink, setTiplink] = useState("")
+
+        TipLink.create().then(tiplink =>  setTiplink(tiplink.url.toString()))
 
         let { data: projectData, error: projectError } = await supabase.from('projects').insert(
             {
@@ -111,6 +116,7 @@ export default function ProjectForm() {
                 project_description: values.project.description,
                 end_date: values.project.end_date.toISOString(),
                 project_goal: values.project.project_goal,
+                project_tiplink: tiplink,
             }
         ).select()
         
@@ -142,7 +148,8 @@ export default function ProjectForm() {
                 console.log(nftImageError)
                 let { error: nftError } =
                     await supabase.from('nfts').insert(
-                        {
+                        {   
+                            project_id: projectData?.pop()?.id,
                             collection_id: collectionData?.pop()?.id,
                             nft_name: element.name,
                             nft_price: element.price,
