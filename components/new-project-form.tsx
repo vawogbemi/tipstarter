@@ -13,19 +13,21 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/types/supabase'
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
-export var pictureCache = {
+export var imageCache = {
     project: {
-        picture: Blob
+        image: Blob
     },
     collection: {
-        picture: Blob,
+        image: Blob,
 
     },
     nfts: [
-        { picture: Blob }
+        { image: Blob }
     ]
 
 }
+
+
 
 export default function ProjectForm() {
 
@@ -38,19 +40,20 @@ export default function ProjectForm() {
     const formSchema = z.object({
         project: z.object({
             name: z.string().min(2).max(50),
-            picture: z.string(),
+            image: z.string().min(2, "Required"),
             description: z.string().min(2).max(500),
+            end_date: z.date(),
         }),
         collection: z.object({
             name: rewards ? z.string().min(2).max(50) : z.string(),
-            picture: z.string(),
+            image: rewards ? z.string().min(2, "Required") : z.string(),
             description: rewards ? z.string().min(2).max(500) : z.string(),
         }).optional(),
         nfts: z.array(
             z.object({
                 name: rewards ? z.string().min(2).max(50) : z.string(),
                 price: rewards ? z.coerce.number() : z.coerce.number(), //not adding min for demo purposes
-                picture: z.string(),
+                image: rewards ? z.string().min(2, "Required") : z.string(),
                 description: rewards ? z.string().min(2).max(500) : z.string(),
             })
         ).optional(),
@@ -63,38 +66,37 @@ export default function ProjectForm() {
         defaultValues: {
             project: {
                 name: "",
-                picture: undefined,
+                image: "",
                 description: "",
             },
             collection: {
                 name: "",
-                picture: undefined,
+                image: "",
                 description: "",
             },
             nfts: [
                 {
                     name: "",
-                    picture: "",
+                    price: 0.00,
+                    image: "",
                     description: "",
                 }
             ]
         }
     })
 
-   
 
+    const [nfts, setNfts] = useState([1])
 
     async function onSubmit(values: projectFormValues) {
         console.log(values)
-        pictureCache.nfts.shift()
-        console.log(pictureCache)
+        imageCache.nfts.shift()
+        console.log(imageCache)
 
         //let { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file)
         //router.push("/")
     }
 
-
-    const [nfts, setNfts] = useState([1])
 
     return (
         <Form {...form}>
@@ -114,7 +116,7 @@ export default function ProjectForm() {
                         </div>
                     )
                 }
-
+                
                 <div className="flex">
                     <div>
                         {rewards &&
