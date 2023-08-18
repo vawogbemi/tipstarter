@@ -103,10 +103,10 @@ export default function ProjectForm() {
         const projectImagePath = `${values.project.name}-${userId}.${projectImageExt}`
 
         let { error: projectImageError } = await supabase.storage.from('projects').upload(projectImagePath, imageCache.project.image)
-        
+
         const [tiplink, setTiplink] = useState("")
 
-        TipLink.create().then(tiplink =>  setTiplink(tiplink.url.toString()))
+        TipLink.create().then(tiplink => setTiplink(tiplink.url.toString()))
 
         let { data: projectData, error: projectError } = await supabase.from('projects').insert(
             {
@@ -119,8 +119,8 @@ export default function ProjectForm() {
                 project_tiplink: tiplink,
             }
         ).select()
-        
-        
+
+
         if (rewards) {
 
             const collectionImageExt = imageCache.collection.image.name.split('.').pop()
@@ -148,7 +148,7 @@ export default function ProjectForm() {
                 console.log(nftImageError)
                 let { error: nftError } =
                     await supabase.from('nfts').insert(
-                        {   
+                        {
                             project_id: projectData?.pop()?.id,
                             collection_id: collectionData?.pop()?.id,
                             nft_name: element.name,
@@ -193,7 +193,7 @@ export default function ProjectForm() {
                     <div>
                         {rewards &&
                             <div>
-                                <Button type="button" className="mr-2" onClick={() => { setNfts(currNfts => ([...currNfts, nfts.length + 1]))}}>Add NFT</Button>
+                                <Button type="button" className="mr-2" onClick={() => { setNfts(currNfts => ([...currNfts, nfts.length + 1])) }}>Add NFT</Button>
                                 <Button type="button" onClick={() => setNfts(nfts.slice(0, -1))}>Remove NFT</Button>
                                 {/*<Button type="button" onClick={() => nfts.length == 0 ? console.log("PickMe") : console.log(nfts)}>Click me</Button>*/}
                             </div>

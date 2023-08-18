@@ -1,6 +1,21 @@
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card"
 
-export default function Feed({ name }: { name: string | null }) {
+export default function Feed({ name, data }: {
+    name: string | null, data: {
+        created_at: string;
+        creator_id: string | null;
+        end_date: string | null;
+        id: number;
+        project_description: string | null;
+        project_funding: number;
+        project_goal: number;
+        project_image: string | null;
+        project_name: string | null;
+        project_num_supporters: number | null;
+        project_tiplink: string | null;
+        updated_at: string;
+    }[] | null
+}) {
     const projects: Object = {
         "1": "one",
         "2": "two",
