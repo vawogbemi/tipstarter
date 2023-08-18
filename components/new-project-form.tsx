@@ -11,18 +11,19 @@ import { useState } from "react"
 import { CollectionFormFields, NFTFormFields, ProjectFormFields } from "./new-project-form-fields"
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/types/supabase'
+
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
 export var imageCache = {
     project: {
-        image: Blob
+        image: new File([""], "")
     },
     collection: {
-        image: Blob,
+        image: new File([""], ""),
 
     },
     nfts: [
-        { image: Blob }
+        { image: new File([""], "") }
     ]
 
 }
@@ -35,7 +36,7 @@ export default function ProjectForm() {
 
     const router = useRouter()
 
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClientComponentClient<Database>({ supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!, supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! });
 
     const formSchema = z.object({
         project: z.object({
@@ -89,10 +90,69 @@ export default function ProjectForm() {
     const [nfts, setNfts] = useState([1])
 
     async function onSubmit(values: projectFormValues) {
-        console.log(values)
         imageCache.nfts.shift()
-        console.log(imageCache)
 
+        const userId = (await supabase.auth.getUser()).data.user?.id
+
+        const projectImageExt = imageCache.project.image.name.split('.').pop()
+        const projectImagePath = `${values.project.name}-${userId}.${projectImageExt}`
+
+        let { error: projectImageError } = await supabase.storage.from('projects').upload(projectImagePath, imageCache.project.image)
+
+        let { data: projectData, error: projectError } = await supabase.from('projects').insert(
+            {
+                creator_id: userId,
+                project_name: values.project.name,
+                project_image: projectImagePath,
+                project_description: values.project.description,
+                end_date: values.project.end_date.toISOString(),
+            }
+        ).select()
+        
+        
+        if (rewards) {
+
+            const collectionImageExt = imageCache.collection.image.name.split('.').pop()
+            const collectionImagePath = `${values.collection?.name}-${projectData?.pop()?.id}.${collectionImageExt}`
+
+            let { error: collectionImageError } = await supabase.storage.from('nft_collections').upload(collectionImagePath, imageCache.collection.image)
+
+            let { data: collectionData, error: collectionError } = await supabase.from('nft_collections').insert(
+                {
+                    project_id: projectData?.pop()?.id,
+                    collection_name: values.collection?.name,
+                    collection_image: collectionImagePath,
+                    collection_description: values.collection?.description,
+                }
+            ).select()
+
+            values.nfts?.forEach(async (element) => {
+
+                const nftImage = imageCache.nfts.shift()
+                const nftImageExt = nftImage?.image.name.split('.').pop()
+                const nftImagePath = `${element.name}-${collectionData?.pop()?.id}.${nftImageExt}`
+
+                console.log(nftImage)
+                let { error: nftImageError } = await supabase.storage.from('nfts').upload(nftImagePath, nftImage!.image)
+                console.log(nftImageError)
+                let { error: nftError } =
+                    await supabase.from('nfts').insert(
+                        {
+                            collection_id: collectionData?.pop()?.id,
+                            nft_name: element.name,
+                            nft_price: element.price,
+                            nft_image: nftImagePath,
+                            nft_description: element.description,
+                        }
+                    )
+            });
+
+            //CREATE CREATORS TIPLINK
+        }
+
+
+
+        //console.log(projectError)
         //let { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file)
         //router.push("/")
     }
@@ -116,7 +176,7 @@ export default function ProjectForm() {
                         </div>
                     )
                 }
-                
+
                 <div className="flex">
                     <div>
                         {rewards &&
