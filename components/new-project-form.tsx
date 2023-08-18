@@ -12,6 +12,7 @@ import { CollectionFormFields, NFTFormFields, ProjectFormFields } from "./new-pr
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/types/supabase'
 
+
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
 export var imageCache = {
@@ -19,7 +20,7 @@ export var imageCache = {
         image: new File([""], "")
     },
     collection: {
-        image: new File([""], ""),
+        image: new File([], ""),
 
     },
     nfts: [
@@ -44,6 +45,7 @@ export default function ProjectForm() {
             image: z.string().min(2, "Required"),
             description: z.string().min(2).max(500),
             end_date: z.date(),
+            project_goal: z.coerce.number(),
         }),
         collection: z.object({
             name: rewards ? z.string().min(2).max(50) : z.string(),
@@ -69,6 +71,8 @@ export default function ProjectForm() {
                 name: "",
                 image: "",
                 description: "",
+                end_date: new Date(Date.now()),
+                project_goal: 0.00,
             },
             collection: {
                 name: "",
@@ -106,6 +110,7 @@ export default function ProjectForm() {
                 project_image: projectImagePath,
                 project_description: values.project.description,
                 end_date: values.project.end_date.toISOString(),
+                project_goal: values.project.project_goal,
             }
         ).select()
         
@@ -181,7 +186,7 @@ export default function ProjectForm() {
                     <div>
                         {rewards &&
                             <div>
-                                <Button type="button" className="mr-2" onClick={() => { setNfts(currNfts => ([...currNfts, nfts.length + 1])) }}>Add NFT</Button>
+                                <Button type="button" className="mr-2" onClick={() => { setNfts(currNfts => ([...currNfts, nfts.length + 1]))}}>Add NFT</Button>
                                 <Button type="button" onClick={() => setNfts(nfts.slice(0, -1))}>Remove NFT</Button>
                                 {/*<Button type="button" onClick={() => nfts.length == 0 ? console.log("PickMe") : console.log(nfts)}>Click me</Button>*/}
                             </div>

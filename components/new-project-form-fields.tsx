@@ -22,6 +22,7 @@ export function ProjectFormFields({ form }: {
             image: string;
             description: string;
             end_date: Date;
+            project_goal: number;
         };
         collection?: {
             name: string;
@@ -111,7 +112,7 @@ export function ProjectFormFields({ form }: {
                                     selected={field.value}
                                     onSelect={field.onChange}
                                     disabled={(date) =>
-                                        date > new Date() || date < new Date("1900-01-01")
+                                        date < new Date() 
                                     }
                                     initialFocus
                                 />
@@ -120,6 +121,20 @@ export function ProjectFormFields({ form }: {
                         <FormDescription>
                             Your date of birth is used to calculate your age.
                         </FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="project.project_goal"
+                render={({ field }) => (
+                    <FormItem className="w-96">
+                        <FormLabel>Project Goal</FormLabel>
+                        <FormControl>
+                            <Input placeholder="shadcn" {...field} />
+                        </FormControl>
+                        <FormDescription>This is your public display name.</FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -135,6 +150,7 @@ export function CollectionFormFields({ form }: {
             image: string;
             description: string;
             end_date: Date;
+            project_goal: number;
         };
         collection?: {
             name: string;
@@ -204,6 +220,7 @@ export function NFTFormFields({ form, instance }: {
             image: string;
             description: string;
             end_date: Date;
+            project_goal: number;
         };
         collection?: {
             name: string;
