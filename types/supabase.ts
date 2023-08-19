@@ -127,6 +127,7 @@ export interface Database {
         Row: {
           created_at: string
           creator_id: string | null
+          creator_image: string | null
           end_date: string | null
           id: number
           project_description: string | null
@@ -141,6 +142,7 @@ export interface Database {
         Insert: {
           created_at?: string
           creator_id?: string | null
+          creator_image?: string | null
           end_date?: string | null
           id?: number
           project_description?: string | null
@@ -155,6 +157,7 @@ export interface Database {
         Update: {
           created_at?: string
           creator_id?: string | null
+          creator_image?: string | null
           end_date?: string | null
           id?: number
           project_description?: string | null

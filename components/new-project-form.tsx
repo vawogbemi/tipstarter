@@ -46,7 +46,7 @@ export default function ProjectForm() {
             image: z.string().min(2, "Required"),
             description: z.string().min(2).max(500),
             end_date: z.date(),
-            project_goal: z.coerce.number(),
+            project_goal: z.coerce.number().min(1),
         }),
         collection: z.object({
             name: rewards ? z.string().min(2).max(50) : z.string(),
@@ -83,7 +83,7 @@ export default function ProjectForm() {
             nfts: [
                 {
                     name: "",
-                    price: 0.00,
+                    price: 1.00,
                     image: "",
                     description: "",
                 }
@@ -97,64 +97,65 @@ export default function ProjectForm() {
     async function onSubmit(values: projectFormValues) {
         imageCache.nfts.shift()
 
-        const userId = (await supabase.auth.getUser()).data.user?.id
+        const user = (await supabase.auth.getUser()).data.user
 
         const projectImageExt = imageCache.project.image.name.split('.').pop()
-        const projectImagePath = `${values.project.name}-${userId}.${projectImageExt}`
+        const projectImagePath = `${values.project.name}-${user?.id}.${projectImageExt}`
 
         let { error: projectImageError } = await supabase.storage.from('projects').upload(projectImagePath, imageCache.project.image)
 
-        const [tiplink, setTiplink] = useState("")
-
-        TipLink.create().then(tiplink => setTiplink(tiplink.url.toString()))
+        //const tiplink = await TipLink.create()
 
         let { data: projectData, error: projectError } = await supabase.from('projects').insert(
             {
-                creator_id: userId,
+                creator_id: user?.id,
                 project_name: values.project.name,
                 project_image: projectImagePath,
                 project_description: values.project.description,
                 end_date: values.project.end_date.toISOString(),
                 project_goal: values.project.project_goal,
-                project_tiplink: tiplink,
+                //project_tiplink: tiplink.url.toString(),
+                creator_image: user?.user_metadata.avatar_url,
+                creator_name: user?.user_metadata.name,
             }
         ).select()
-
+        
+        const pd = projectData?.at(0)
 
         if (rewards) {
 
             const collectionImageExt = imageCache.collection.image.name.split('.').pop()
-            const collectionImagePath = `${values.collection?.name}-${projectData?.pop()?.id}.${collectionImageExt}`
+            const collectionImagePath = `${values.collection?.name}-${pd?.id}.${collectionImageExt}`
 
             let { error: collectionImageError } = await supabase.storage.from('nft_collections').upload(collectionImagePath, imageCache.collection.image)
 
             let { data: collectionData, error: collectionError } = await supabase.from('nft_collections').insert(
                 {
-                    project_id: projectData?.pop()?.id,
+                    project_id: pd?.id,
                     collection_name: values.collection?.name,
                     collection_image: collectionImagePath,
                     collection_description: values.collection?.description,
                 }
             ).select()
-
-            values.nfts?.forEach(async (element) => {
+            
+            const cd = collectionData?.at(0)
+            console.log(imageCache.nfts)
+            values.nfts?.forEach(async (nft) => {
 
                 const nftImage = imageCache.nfts.shift()
                 const nftImageExt = nftImage?.image.name.split('.').pop()
-                const nftImagePath = `${element.name}-${collectionData?.pop()?.id}.${nftImageExt}`
+                const nftImagePath = `${nft.name}-${cd?.id}.${nftImageExt}`
 
-                console.log(nftImage)
                 let { error: nftImageError } = await supabase.storage.from('nfts').upload(nftImagePath, nftImage!.image)
-                console.log(nftImageError)
                 let { error: nftError } =
                     await supabase.from('nfts').insert(
                         {
-                            project_id: projectData?.pop()?.id,
-                            collection_id: collectionData?.pop()?.id,
-                            nft_name: element.name,
-                            nft_price: element.price,
+                            project_id: pd?.id,
+                            collection_id: cd?.id,
+                            nft_name: nft.name,
+                            nft_price: nft.price,
                             nft_image: nftImagePath,
-                            nft_description: element.description,
+                            nft_description: nft.description,
                         }
                     )
             });
@@ -194,7 +195,7 @@ export default function ProjectForm() {
                         {rewards &&
                             <div>
                                 <Button type="button" className="mr-2" onClick={() => { setNfts(currNfts => ([...currNfts, nfts.length + 1])) }}>Add NFT</Button>
-                                <Button type="button" onClick={() => setNfts(nfts.slice(0, -1))}>Remove NFT</Button>
+                                <Button type="button" onClick={() => {if (nfts.length > 1){setNfts(nfts.slice(0, -1))}}}>Remove NFT</Button>
                                 {/*<Button type="button" onClick={() => nfts.length == 0 ? console.log("PickMe") : console.log(nfts)}>Click me</Button>*/}
                             </div>
                         }

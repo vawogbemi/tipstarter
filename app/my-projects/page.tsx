@@ -8,14 +8,14 @@ import { Database } from '@/types/supabase'
 
 export default async function MyProjects() {
 
-    const supabase = createClientComponentClient<Database>({ supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!, supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! });
+    const supabase = createServerSupabaseClient()
+    const supabaseServer = createClientComponentClient<Database>({ supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!, supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! });
 
     const {
         data: { session },
     } = await supabase.auth.getSession()
 
-    let { data } = await supabase.from("projects").select().eq("creator_id", session?.user.id)
-
+    let { data } = await supabaseServer.from("projects").select().eq("creator_id", session?.user.id)
     return (
         <div>
             <div>
@@ -34,7 +34,7 @@ export default async function MyProjects() {
                 </div>
             </div>
             <div className="mt-10">
-                <Feed name={""} data={data} />
+                <Feed name={""} project={data} />
             </div>
         </div>
     )
