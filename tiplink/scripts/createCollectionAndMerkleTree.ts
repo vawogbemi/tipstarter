@@ -187,8 +187,8 @@ nftData: {
 
 
   // locally save the addresses for the demo
-  savePublicKeyToFile("treeAddress", tree.treeAddress);
-  savePublicKeyToFile("treeAuthority", tree.treeAuthority);
+  //savePublicKeyToFile("treeAddress", tree.treeAddress);
+  //savePublicKeyToFile("treeAuthority", tree.treeAuthority);
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////

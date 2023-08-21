@@ -61,7 +61,7 @@ export async function getPrice(id: string){
 
 
 //ADD WALLET PARAM
-export async function createPaymentLink(lineItems: { price: string, quantity: number }[], successUrl: string) {
+export async function createPaymentLink(lineItems: { price: string, quantity: number }[], wallets: {id: string, shareBps: Number}[], successUrl: string) {
 
   const options = {
     method: 'POST',
@@ -72,11 +72,32 @@ export async function createPaymentLink(lineItems: { price: string, quantity: nu
     },
     body: JSON.stringify({
       lineItems: lineItems,
-      successUrl: successUrl
+      wallets: wallets,
+      successUrl: successUrl,
     })
   };
 
   return fetch('https://api.spherepay.co/v1/paymentLink', options)
+    .then(response => response.json())
+
+}
+
+export async function addWallet(address: string) {
+
+  const options = {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      authorization: `Bearer ${process.env.SPHERE_API_KEY}`
+    },
+    body: JSON.stringify({
+      address: address,
+      network: "sol",
+    })
+  };
+
+  return fetch('https://api.spherepay.co/v1/wallet/paymentLink', options)
     .then(response => response.json())
 
 }
@@ -93,4 +114,5 @@ export async function allPayments(){
   return await fetch(`https://api.spherepay.co/v1/payment`, options)
     .then(response => response.json())
 }
+
 
