@@ -52,9 +52,11 @@ export default function SpherePayForm({ data }: {
             body: JSON.stringify({ product: data?.sphere_product_id, unitAmount: values.amount * 100000 })
         };
 
-        console.log(data?.sphere_product_id)
-        
+
         const price = await (await fetch("/sphere/createPrice", spherePriceOptions)).json()
+
+        console.log(price)
+
 
         const spherePaymentLinkOptions = {
             method: 'POST',
