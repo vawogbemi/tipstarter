@@ -14,7 +14,7 @@ export default function AuthForm() {
       theme="dark"
       showLinks={false}
       providers={['google']}
-      redirectTo="/auth/callback"
+      redirectTo="https://tipstarter.vercel.app/auth/callback"
     />
   )
 }
