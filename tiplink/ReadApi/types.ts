@@ -2,6 +2,7 @@
   Types specific to the ReadApi
 */
 
+//@ts-ignore
 import type { Metadata, Option } from "@metaplex-foundation/js";
 import { ConcurrentMerkleTreeAccount } from "@solana/spl-account-compression";
 

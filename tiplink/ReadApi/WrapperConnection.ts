@@ -5,7 +5,9 @@ import { TokenStandard } from "@metaplex-foundation/mpl-token-metadata";
 import { PROGRAM_ID as BUBBLEGUM_PROGRAM_ID } from "@metaplex-foundation/mpl-bubblegum";
 
 // import from the `@metaplex-foundation/js`
+//@ts-ignore
 import { MetaplexError, toBigNumber, Pda, amount } from "@metaplex-foundation/js";
+//@ts-ignore
 import type { SplTokenCurrency, Metadata, Mint, NftOriginalEdition } from "@metaplex-foundation/js";
 
 // local imports for the ReadApi types
