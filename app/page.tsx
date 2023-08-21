@@ -26,8 +26,18 @@ export default async function Home() {
 
   let { data } = await supabaseServer.from("projects").select()
   
-  const product = await createProduct("OMHSDGJSOOHGSNO", "b", [])
-  console.log(product)
+  const options = {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      authorization: `Bearer ${process.env.SPHERE_API_KEY}`
+    },
+    body: JSON.stringify({ name: "name", description: "description", images: []})
+  };
+
+   await fetch('https://api.spherepay.co/v1/product', options)
+    .then(response => response.json())
  /*
   const price = await createPrice("b", product.data.product.id!, 1, 0)
 
