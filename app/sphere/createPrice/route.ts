@@ -8,6 +8,6 @@ export async function POST(req: NextRequest) {
     const price = await createPrice(body.product, body.unitAmount)
 
     return NextResponse.json(
-        {"hi":"hahah"}
+        price
     )
 }
