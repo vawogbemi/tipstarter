@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     
-    const price = await createPrice(body.product, body.unitAmount)
+    const price = await createPrice(body.name, body.product, body.unitAmount)
 
     return NextResponse.json(
         price

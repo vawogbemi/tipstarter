@@ -7,6 +7,8 @@ import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import SpherePayForm from '@/components/sphere-pay';
+import { Button } from '@/components/ui/button';
+import DoomsDayButton from '@/app/endEvent/oppenheimer';
 
 
 export default async function Page({ params }: { params: { id: string } }) {
@@ -36,13 +38,18 @@ export default async function Page({ params }: { params: { id: string } }) {
 
     cd ? { data: nftData, error: nftError } = await supabaseServer.from("nfts").select().eq("project_id", params.id) : null
 
-
     return (
         <div>
             <div>
                 <MainNav session={session} />
             </div>
             <div className='mx-20'>
+                {(pd?.creator_id == session?.user.id) &&
+                
+                <div className='flex mt-5'>
+                    <DoomsDayButton data={pd} />
+                </div>
+                }
                 <Card className='flex flex-wrap mt-10 justify-start content-start'>
                     <CardContent className='mt-5 md:w-full lg:w-3/5'>
                         <img className='w-auto' src={projectImage.publicUrl} alt="" />
@@ -58,13 +65,13 @@ export default async function Page({ params }: { params: { id: string } }) {
                     </CardFooter>
                 </Card>
                 <div className='flex mt-2'>
-                    <SpherePayForm data={pd} />
+                    <SpherePayForm session={session} data={pd} />
                     <p className='mt-10 ml-auto text-3xl font-helvetica'> ${pd?.project_funding}/{pd?.project_goal}</p>
                 </div>
-                <Progress className='mt-5' value={(pd?.project_funding! / pd?.project_goal!) * 100} />
+                <Progress className='my-5' value={(pd?.project_funding! / pd?.project_goal!) * 100} />
                 {cd &&
                     <div className=''>
-                        <div className='flex flex-wrap mt-5'>
+                        <div className='flex flex-wrap '>
                             <div className='flex border w-full lg:w-2/5 border-black '>
                                 <p className='text-3xl [writing-mode:vertical-rl] pt-10 border'>{cd.collection_name} Collection</p>
                                 <img className="py-5 pl-4 pr-5 w-11/12" src={collectionImage!.publicUrl} />
