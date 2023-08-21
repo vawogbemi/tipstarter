@@ -49,7 +49,7 @@ export default function SpherePayForm({ data }: {
 
         const spherePriceOptions = {
             method: 'POST',
-            body: JSON.stringify({ product: data?.sphere_product_id, unitAmount: values.amount * 100000 })
+            body: JSON.stringify({ product: data?.sphere_product_id, unitAmount: values.amount * 1000000 })
         };
 
 
