@@ -26,8 +26,8 @@ export default async function Home() {
 
   let { data } = await supabaseServer.from("projects").select()
   
-  //const product = await createProduct("a", "b", [])
-  //console.log(product)
+  const product = await createProduct("a", "b", [])
+  console.log(product)
  /*
   const price = await createPrice("b", product.data.product.id!, 1, 0)
 
