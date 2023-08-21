@@ -20,11 +20,12 @@ import {
 import dotenv from "dotenv";
 
 // import the NFTMetadata
-import { createCompressedNFTMetadata, NFTMetadata, nftMetadatas } from '@/tiplink/onChainNftMetadata/onChainNFTs';
+import { createCompressedNFTMetadata, NFTMetadata } from '@/tiplink/onChainNftMetadata/onChainNFTs';
 import { extractSignatureFromFailedTransaction } from "@/tiplink/utils/helpers";
 
 // import fs to write the TipLink wallet URLs to a CSV file
 import fs from "fs";
+import { TipLink } from "@tiplink/api";
 
 
 dotenv.config();
@@ -39,17 +40,17 @@ const createAndFundTipLink = async (
   collectionMetadataAccount: PublicKey,
   collectionMasterEditionAccount: PublicKey,
   nftMetadata: NFTMetadata
-) => {  
+) => {
 
   //Add the function to create a TipLink and update the tipLinkPubKey variable
 
   const tipLinkPubKey = new PublicKey("Change this out for the created TipLink public key")
-  
-  
-    //const csvData = `${tipLink.url.href}\n`;
-    //fs.appendFileSync("outputTipLink.csv", csvData, "utf8");
-    
-    
+
+
+  //const csvData = `${tipLink.url.href}\n`;
+  //fs.appendFileSync("outputTipLink.csv", csvData, "utf8");
+
+
   const compressedNFTMetadata = createCompressedNFTMetadata(nftMetadata, payer);
   const mintIxn = mintCompressedNFTIxn(
     payer,
@@ -94,18 +95,25 @@ const createAndFundTipLink = async (
   }
 };
 
-(async () => {
+export default async function mintToTipLink(payer: TipLink, nftMetadatas:  NFTMetadata[], keys: {
+  userAddress: PublicKey;
+  treeAddress: PublicKey;
+  treeAuthority: PublicKey;
+  collectionMint: PublicKey;
+  collectionMetadataAccount: PublicKey;
+  collectionMasterEditionAccount: PublicKey;
+}) {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
 
   // generate a new keypair for use in this demo
-  const payer = loadOrGenerateKeypair("payer");
+  //const payer = loadOrGenerateKeypair("payer");
 
-  console.log("Payer address:", payer.publicKey.toBase58());
-  
+  console.log("Payer address:", payer.keypair.publicKey.toBase58());
+
   // load the stored PublicKeys for ease of use
-  let keys = loadPublicKeysFromFile();
+  //let keys = loadPublicKeysFromFile();
 
   // ensure the primary script was already run
   if (!keys?.collectionMint || !keys?.treeAddress)
@@ -142,7 +150,7 @@ const createAndFundTipLink = async (
     console.log(nftMetadata);
     await createAndFundTipLink(
       connection,
-      payer,
+      payer.keypair,
       treeAddress,
       collectionMint,
       collectionMetadataAccount,
@@ -151,4 +159,4 @@ const createAndFundTipLink = async (
     );
   }
 
-})();
+}

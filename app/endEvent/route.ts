@@ -17,13 +17,13 @@ export async function POST(req: NextRequest) {
         .map((key: { name: any; unitAmount: any; }) => ({ name: key.name, unitAmount: Number((key.unitAmount/1000000)) }))
 
 
-    const groupedPaymnets: any[] = []
+    const totalPayments: any[] = []
 
     
     filteredPayments.reduce((res: { [x: string]: { name: any, unitAmount: any; }; }, value: { name: string | number; unitAmount: any; }) => {
         if (!res[value.name]) {
             res[value.name] = { name: value.name, unitAmount: 0 };
-            groupedPaymnets.push(res[value.name])
+            totalPayments.push(res[value.name])
         }
         res[value.name].unitAmount += value.unitAmount;
         return res;
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     
     
 
-    /*const supabaseServer = createClientComponentClient<Database>({ supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!, supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! });
+    const supabaseServer = createClientComponentClient<Database>({ supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!, supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! });
     
     const { data: collectionData } = await supabaseServer.from("nft_collections").select().eq("id", body.projectId)
     
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
 
     const { data: nftData } = await supabaseServer.from("nfts").select().eq("id", body.projectId)
 
-    createCollectionAndMerkleTree({collectionData: cd, nftData: nftData})*/
+    createCollectionAndMerkleTree({collectionData: cd, nftData: nftData, totalPayments: totalPayments})
 
     return NextResponse.json(
         body

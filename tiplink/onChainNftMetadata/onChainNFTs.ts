@@ -13,7 +13,7 @@ import {
   };
   
   
-  export const nftMetadatas: NFTMetadata[] = [
+   const nftMetadatas: NFTMetadata[] = [
     {
       name: "Compressed NFT 1",
       //This is example JSON metadata for the NFTs

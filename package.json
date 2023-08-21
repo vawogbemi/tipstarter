@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.1.0",
-    "@metaplex-foundation/js": "0.18.0",
+    "@metaplex-foundation/js": "^0.19.4",
     "@metaplex-foundation/mpl-bubblegum": "^0.7.0",
     "@metaplex-foundation/mpl-token-metadata": "^2.13.0",
     "@radix-ui/react-accordion": "^1.1.2",
@@ -46,7 +46,7 @@
     "encoding": "^0.1.13",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.13",
-    "js": "link:@types/@metaplex-foundation/js",
+    "js@0.18.3": "link:@types/metaplex-foundation/js@0.18.3",
     "lucide-react": "^0.263.1",
     "next": "13.4.17",
     "postcss": "8.4.27",

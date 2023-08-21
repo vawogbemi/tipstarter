@@ -38,7 +38,7 @@ export async function createPrice(name:string, product: string, unitAmount: numb
     body: JSON.stringify({
       name: name,
       product: product,
-      currency: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", unitAmount: unitAmount, 
+      currency: "sol", unitAmount: unitAmount, 
     })
   };
 

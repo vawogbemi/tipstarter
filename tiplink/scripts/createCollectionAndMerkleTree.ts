@@ -41,6 +41,8 @@ import { WrapperConnection } from "@/tiplink/ReadApi/WrapperConnection";
 
 import dotenv from "dotenv";
 import { TipLink } from "@tiplink/api";
+import mintToTipLink from "./mintToTipLink";
+import { NFTMetadata } from "../onChainNftMetadata/onChainNFTs";
 dotenv.config();
 
 // define some reusable balance values for tracking
@@ -48,7 +50,7 @@ let initBalance: number, balance: number;
 
 
 
-export default async function createCollectionAndMerkleTree({ collectionData, nftData }: {
+export default async function createCollectionAndMerkleTree({ collectionData, nftData, totalPayments }: {
   collectionData: {
     collection_description: string | null;
     collection_image: string | null;
@@ -58,24 +60,26 @@ export default async function createCollectionAndMerkleTree({ collectionData, nf
     creator_email: string | null;
     id: number;
     project_id: number | null;
-} | undefined,
+  } | undefined,
 
-nftData: {
-  collection_id: number | null;
-  created_at: string;
-  id: number;
-  nft_description: string | null;
-  nft_image: string | null;
-  nft_name: string | null;
-  nft_price: number | null;
-  project_id: number | null;
-}[] | null
+  nftData: {
+    collection_id: number | null;
+    created_at: string;
+    id: number;
+    nft_description: string | null;
+    nft_image: string | null;
+    nft_name: string | null;
+    nft_price: number | null;
+    project_id: number | null;
+  }[] | null,
+
+  totalPayments: { name: string, unitAmount: number }[]
 }) {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   const payer = await TipLink.fromLink(collectionData?.collection_tiplink!)
-  
+
   // load your kepair locally from the filesystem after running the createWallet.ts script)
   //const payer = loadOrGenerateKeypair("payer");
 
@@ -197,7 +201,6 @@ nftData: {
     Create the actual NFT collection (using the normal Metaplex method)
     (nothing special about compression here)
   */
-  const data2 = "hi"
   // define the metadata to be used for creating the NFT collection
   const collectionMetadataV3: CreateMetadataAccountArgsV3 = {
     data: {
@@ -205,7 +208,7 @@ nftData: {
       symbol: "TESTooor",
       // specific json metadata for the collection
       //https://shdw-drive.genesysgo.net/91uEGv2pFyc3nZPgya6L41FKaoD6GoTcGDHqhokHe7Hw/metaURI.json
-      uri: `https://api.val.town/v1/run/vawogbemi.collectionMetadataV3?args=[\"${collectionData?.collection_name}\",\"${collectionData?.collection_description}\",\"${collectionData?.collection_image}\",\"${payer.keypair.publicKey.toBase58()}\"]`,
+      uri: `https://api.val.town/v1/run/vawogbemi.collectionMetadataV3?args=["${collectionData?.collection_name}","${collectionData?.collection_description}","${collectionData?.collection_image}","${payer.keypair.publicKey.toBase58()}"]`,
       sellerFeeBasisPoints: 100,
       creators: [
         {
@@ -229,7 +232,7 @@ nftData: {
   //savePublicKeyToFile("collectionMetadataAccount", collection.metadataAccount);
   //savePublicKeyToFile("collectionMasterEditionAccount", collection.masterEditionAccount);
 
-  const key = {
+  const keys = {
     "userAddress": payer.keypair.publicKey,
     "treeAddress": tree.treeAddress,
     "treeAuthority": tree.treeAuthority,
@@ -255,6 +258,43 @@ nftData: {
 
   // fetch the payer's final balance
   balance = await connection.getBalance(payer.keypair.publicKey);
+  
+
+  const nftMetadatas: NFTMetadata[] = nftData ? nftData?.filter(key => key.nft_price).map(
+    key => ({
+      name: key.nft_name ? key.nft_name : "no name provided",
+      uri: `https://api.val.town/v1/run/vawogbemi.nftMetadata?args=["${key.nft_name}","${key.nft_description}","${key.nft_image}"]`,
+      symbol: "Tipstarter",
+    })
+  ) : [
+    {
+      name: "default",
+      uri: "default",
+      symbol: "default",
+    }
+  ]
+
+  totalPayments.forEach(payment => {
+
+    const nftMetadatas: NFTMetadata[] = nftData? nftData?.filter(key => payment.unitAmount >= (key.nft_price ? key.nft_price : 0)).map(
+      key => ({
+        name: key.nft_name ? key.nft_name : "no name provided",
+        uri: `https://api.val.town/v1/run/vawogbemi.nftMetadata?args=["${key.nft_name}","${key.nft_description}","${key.nft_image}"]`,
+        symbol: "Tipstarter",
+      })
+    ) : [
+      {
+        name: "default",
+        uri: "default",
+        symbol: "default",
+      }
+    ]
+
+    mintToTipLink(payer, nftMetadatas, keys)
+  })
+
+
+
 
   console.log(`===============================`);
   console.log(
