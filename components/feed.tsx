@@ -28,8 +28,8 @@ export default async function Feed({ name, project }: {
             <div className="flex flex-wrap justify-around content-start gap-10 md:gap-10 lg:gap-10 mt-5">
                 {
                     project?.map((key) => (
-                        <Link href={`/project/${key.id}`}>
-                            <Card className="w-[300px] md:w-[400px] lg:w-[500px]" key={key.id}>
+                        <Link key={key.id} href={`/project/${key.id}`}>
+                            <Card className="w-[300px] md:w-[400px] lg:w-[500px]">
                                 <CardHeader>
                                     <CardTitle>{key.project_name}</CardTitle>
                                     <CardDescription>{key.project_description}</CardDescription>
