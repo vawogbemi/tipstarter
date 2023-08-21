@@ -14,7 +14,9 @@ export interface Database {
           collection_description: string | null
           collection_image: string | null
           collection_name: string | null
+          collection_tiplink: string | null
           created_at: string
+          creator_email: string | null
           id: number
           project_id: number | null
         }
@@ -22,7 +24,9 @@ export interface Database {
           collection_description?: string | null
           collection_image?: string | null
           collection_name?: string | null
+          collection_tiplink?: string | null
           created_at?: string
+          creator_email?: string | null
           id?: number
           project_id?: number | null
         }
@@ -30,7 +34,9 @@ export interface Database {
           collection_description?: string | null
           collection_image?: string | null
           collection_name?: string | null
+          collection_tiplink?: string | null
           created_at?: string
+          creator_email?: string | null
           id?: number
           project_id?: number | null
         }
@@ -137,7 +143,6 @@ export interface Database {
           project_image: string | null
           project_name: string | null
           project_num_supporters: number | null
-          project_tiplink: string | null
           sphere_product_id: string | null
           updated_at: string
         }
@@ -154,7 +159,6 @@ export interface Database {
           project_image?: string | null
           project_name?: string | null
           project_num_supporters?: number | null
-          project_tiplink?: string | null
           sphere_product_id?: string | null
           updated_at?: string
         }
@@ -171,7 +175,6 @@ export interface Database {
           project_image?: string | null
           project_name?: string | null
           project_num_supporters?: number | null
-          project_tiplink?: string | null
           sphere_product_id?: string | null
           updated_at?: string
         }

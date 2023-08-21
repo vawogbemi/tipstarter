@@ -5,11 +5,10 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { redirect, useRouter } from "next/navigation"
-import { createPaymentLink, createPrice, getProduct } from "@/lib/spherePayUtils";
-import { useEffect } from "react";
+import { Session } from "@supabase/auth-helpers-nextjs";
+import { TipLink } from "@tiplink/api";
 
-export default function SpherePayForm({ data }: {
+export default function SpherePayForm({ data, session, collection_tiplink}: {
     data: {
         created_at: string;
         creator_id: string | null;
@@ -23,14 +22,15 @@ export default function SpherePayForm({ data }: {
         project_image: string | null;
         project_name: string | null;
         project_num_supporters: number | null;
-        project_tiplink: string | null;
         sphere_product_id: string | null;
         updated_at: string;
-    } | undefined
+    } | undefined, 
+    session: Session | null,
+    collection_tiplink: string | null | undefined,
 }) {
 
     const formSchema = z.object({
-        amount: z.coerce.number().min(100)
+        amount: z.coerce.number().min(0)
     })
 
     type FormValues = z.infer<typeof formSchema>
@@ -41,15 +41,21 @@ export default function SpherePayForm({ data }: {
             amount: 0
         }
     })
-    const router = useRouter()
 
 
     async function onSubmit(values: FormValues) {
 
+        if (session == null) {
+            alert("please login")
+            return
+        }
 
         const spherePriceOptions = {
             method: 'POST',
-            body: JSON.stringify({ product: data?.sphere_product_id, unitAmount: values.amount * 1000000 })
+            body: JSON.stringify({ 
+                name: session.user.user_metadata.email, 
+                product: data?.sphere_product_id, unitAmount: values.amount * 1000000
+             })
         };
 
 
@@ -57,15 +63,28 @@ export default function SpherePayForm({ data }: {
 
         console.log(price)
 
+        const sphereWalletOptions = {
+            method: 'POST',
+            body: JSON.stringify({ 
+                address: (await TipLink.fromLink(collection_tiplink!)).keypair.publicKey.toString(), 
+                })
+        }
+
+        const wallet = await( await fetch("/sphere/addWallet", sphereWalletOptions)).json()
 
         const spherePaymentLinkOptions = {
             method: 'POST',
-            body: JSON.stringify({lineItems: [{ price: price.data.price.id, quantity: 1 }]})
+            body: JSON.stringify({ 
+                lineItems: [{ price: price.data.price.id, quantity: 1 }], 
+                wallets: [{ id: wallet.data.wallet.id, shareBps: 10000 }], 
+                successUrl: `https://tipstarter.vercel.app/payment/${data!.id}/${price.id}` })
         };
 
         const paymentLink = await (await fetch("/sphere/createPaymentLink", spherePaymentLinkOptions)).json()
 
-        window.location.replace(paymentLink.data.paymentLink.url)
+        console.log(wallet)
+        console.log(paymentLink)
+        //window.location.replace(paymentLink.data.paymentLink.url)
 
 
     }

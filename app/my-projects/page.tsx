@@ -15,7 +15,8 @@ export default async function MyProjects() {
         data: { session },
     } = await supabase.auth.getSession()
 
-    let { data } = await supabaseServer.from("projects").select().eq("creator_id", session?.user.id)
+    const { data: projectData } = await supabaseServer.from("projects").select().eq("creator_id", session?.user.id)
+    
     return (
         <div>
             <div>
@@ -34,7 +35,7 @@ export default async function MyProjects() {
                 </div>
             </div>
             <div className="mt-10">
-                <Feed name={""} project={data} />
+                <Feed name={""} project={projectData} />
             </div>
         </div>
     )

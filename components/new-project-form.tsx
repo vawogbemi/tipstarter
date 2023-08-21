@@ -113,7 +113,6 @@ export default function ProjectForm() {
         
         const sphereProduct = await (await fetch("/sphere/createProduct", sphereOptions)).json()      
         
-        //const tiplink = await TipLink.create()
 
         let { data: projectData, error: projectError } = await supabase.from('projects').insert(
             {
@@ -123,7 +122,6 @@ export default function ProjectForm() {
                 project_description: values.project.description,
                 end_date: values.project.end_date.toISOString(),
                 project_goal: values.project.project_goal,
-                //project_tiplink: tiplink.url.toString(),
                 creator_image: user?.user_metadata.avatar_url,
                 creator_name: user?.user_metadata.name,
                 sphere_product_id: sphereProduct.data.product.id
@@ -131,6 +129,8 @@ export default function ProjectForm() {
         ).select()
 
         const pd = projectData?.at(0)
+
+        const tiplink = await TipLink.create()
 
         if (rewards) {
 
@@ -145,6 +145,8 @@ export default function ProjectForm() {
                     collection_name: values.collection?.name,
                     collection_image: collectionImagePath,
                     collection_description: values.collection?.description,
+                    collection_tiplink: tiplink.url.toString(),
+                    creator_email: user?.user_metadata.email,
                 }
             ).select()
 
