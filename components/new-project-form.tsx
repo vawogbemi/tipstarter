@@ -7,29 +7,29 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "./ui/button"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { CollectionFormFields, NFTFormFields, ProjectFormFields } from "./new-project-form-fields"
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/types/supabase'
 import { TipLink } from "@tiplink/api"
+import { createProduct } from "@/lib/spherePayUtils"
 
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
 export var imageCache = {
     project: {
-        image: new File([""], "")
+        image: new File([], "")
     },
     collection: {
         image: new File([], ""),
 
     },
     nfts: [
-        { image: new File([""], "") }
+        { image: new File([], "") }
     ]
 
 }
-
 
 
 export default function ProjectForm() {
@@ -94,7 +94,9 @@ export default function ProjectForm() {
 
     const [nfts, setNfts] = useState([1])
 
+
     async function onSubmit(values: projectFormValues) {
+        
         imageCache.nfts.shift()
 
         const user = (await supabase.auth.getUser()).data.user
@@ -104,6 +106,13 @@ export default function ProjectForm() {
 
         let { error: projectImageError } = await supabase.storage.from('projects').upload(projectImagePath, imageCache.project.image)
 
+        const sphereOptions = {
+            method: 'POST',
+            body: JSON.stringify({ name: values.project.name, description: values.project.description, images: [`https://lprpwskeennxoukahtlc.supabase.co/storage/v1/object/public/projects/${projectImagePath}`]})
+          };
+        
+        const sphereProduct = await (await fetch("/sphere/createProduct", sphereOptions)).json()      
+        
         //const tiplink = await TipLink.create()
 
         let { data: projectData, error: projectError } = await supabase.from('projects').insert(
@@ -117,9 +126,10 @@ export default function ProjectForm() {
                 //project_tiplink: tiplink.url.toString(),
                 creator_image: user?.user_metadata.avatar_url,
                 creator_name: user?.user_metadata.name,
+                sphere_product_id: sphereProduct.data.product.id
             }
         ).select()
-        
+
         const pd = projectData?.at(0)
 
         if (rewards) {
@@ -137,7 +147,7 @@ export default function ProjectForm() {
                     collection_description: values.collection?.description,
                 }
             ).select()
-            
+
             const cd = collectionData?.at(0)
             console.log(imageCache.nfts)
             values.nfts?.forEach(async (nft) => {
@@ -195,7 +205,7 @@ export default function ProjectForm() {
                         {rewards &&
                             <div>
                                 <Button type="button" className="mr-2" onClick={() => { setNfts(currNfts => ([...currNfts, nfts.length + 1])) }}>Add NFT</Button>
-                                <Button type="button" onClick={() => {if (nfts.length > 1){setNfts(nfts.slice(0, -1))}}}>Remove NFT</Button>
+                                <Button type="button" onClick={() => { if (nfts.length > 1) { setNfts(nfts.slice(0, -1)) } }}>Remove NFT</Button>
                                 {/*<Button type="button" onClick={() => nfts.length == 0 ? console.log("PickMe") : console.log(nfts)}>Click me</Button>*/}
                             </div>
                         }

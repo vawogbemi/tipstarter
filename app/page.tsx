@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { createServerSupabaseClient } from '@/lib/supabaseUtils';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/types/supabase'
+import { createPaymentLink, createPrice, createProduct } from '@/lib/spherePayUtils';
 
 
 export default async function Home() {
@@ -24,8 +25,22 @@ export default async function Home() {
   const tp = "https://tiplink.io/i#238AKcwZdwit8vDmR"
 
   let { data } = await supabaseServer.from("projects").select()
+  
+  //const product = await createProduct("a", "b", [])
+  //console.log(product)
+ /*
+  const price = await createPrice("b", product.data.product.id!, 1, 0)
 
-  const props = { name: "My Projects" }
+  const paymentLink = await createPaymentLink("c", [{ price: price.data.price.id, quantity: 3}])
+  //console.log(product)
+  //console.log(price.data.price.product)
+  console.log(price)
+  console.log("------------------")
+  console.log(price.data.price.id)
+  console.log("------------------")
+  console.log(paymentLink)*/
+
+
   return (
     <div>
       <div>

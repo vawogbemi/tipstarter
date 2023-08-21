@@ -2,11 +2,12 @@ import { createServerSupabaseClient } from '@/lib/supabaseUtils';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/types/supabase'
 import MainNav from '@/components/main-nav'
-import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import SpherePayForm from '@/components/sphere-pay';
+
 
 export default async function Page({ params }: { params: { id: string } }) {
 
@@ -56,7 +57,10 @@ export default async function Page({ params }: { params: { id: string } }) {
                         <p className='text-sm md:text-2xl mt-5'>{pd?.project_description}</p>
                     </CardFooter>
                 </Card>
-                <p className='mt-5'> {pd?.project_funding}/{pd?.project_goal} raised</p>
+                <div className='flex mt-2'>
+                    <SpherePayForm data={pd} />
+                    <p className='mt-10 ml-auto text-3xl font-helvetica'> ${pd?.project_funding}/{pd?.project_goal}</p>
+                </div>
                 <Progress className='mt-5' value={(pd?.project_funding! / pd?.project_goal!) * 100} />
                 {cd &&
                     <div className=''>
@@ -70,7 +74,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                                     {
                                         nftData?.map(
                                             key => (
-                                                <AccordionItem value={key.id.toString()} className='w-full'>
+                                                <AccordionItem key={key.id} value={key.id.toString()} className='w-full'>
                                                     <AccordionTrigger>{key.nft_name}</AccordionTrigger>
                                                     <AccordionContent className=''>
                                                         <div className='flex flex-wrap'>
@@ -78,7 +82,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                                                                 <p className='mt-5'>price: {key.nft_price}</p>
                                                                 <p className='mt-5'>description: {key.nft_description}</p>
                                                             </div>
-                                                            <img className="ml-10 w-1/5 max-h-40 justify-self-end" src={`https://lprpwskeennxoukahtlc.supabase.co/storage/v1/object/public/nfts/${key.nft_image}`} alt="" width={"auto"} height={"100px"}/>
+                                                            <img className="ml-10 w-1/5 max-h-40 justify-self-end" src={`https://lprpwskeennxoukahtlc.supabase.co/storage/v1/object/public/nfts/${key.nft_image}`} alt="" width={"auto"} height={"100px"} />
                                                         </div>
                                                     </AccordionContent>
                                                 </AccordionItem>
@@ -87,7 +91,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                                     }
                                 </ScrollArea>
 
-                            </Accordion> 
+                            </Accordion>
                         </div>
                     </div>
                 }
