@@ -7,25 +7,30 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "./ui/button"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { CollectionFormFields, NFTFormFields, ProjectFormFields } from "./new-project-form-fields"
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/types/supabase'
+import { TipLink } from "@tiplink/api"
+import { createProduct } from "@/lib/spherePayUtils"
+
+
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
-export var pictureCache = {
+export var imageCache = {
     project: {
-        picture: Blob
+        image: new File([], "")
     },
     collection: {
-        picture: Blob,
+        image: new File([], ""),
 
     },
     nfts: [
-        { picture: Blob }
+        { image: new File([], "") }
     ]
 
 }
+
 
 export default function ProjectForm() {
 
@@ -33,23 +38,26 @@ export default function ProjectForm() {
 
     const router = useRouter()
 
-    const supabase = createClientComponentClient<Database>()
+    const supabase = createClientComponentClient<Database>({ supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!, supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! });
 
     const formSchema = z.object({
         project: z.object({
             name: z.string().min(2).max(50),
-            picture: z.string(),
+            image: z.string().min(2, "Required"),
             description: z.string().min(2).max(500),
+            end_date: z.date(),
+            project_goal: z.coerce.number().min(1),
         }),
         collection: z.object({
             name: rewards ? z.string().min(2).max(50) : z.string(),
-            picture: z.string(),
+            image: rewards ? z.string().min(2, "Required") : z.string(),
             description: rewards ? z.string().min(2).max(500) : z.string(),
         }).optional(),
         nfts: z.array(
             z.object({
                 name: rewards ? z.string().min(2).max(50) : z.string(),
-                picture: z.string(),
+                price: rewards ? z.coerce.number() : z.coerce.number(), //not adding min for demo purposes
+                image: rewards ? z.string().min(2, "Required") : z.string(),
                 description: rewards ? z.string().min(2).max(500) : z.string(),
             })
         ).optional(),
@@ -62,38 +70,116 @@ export default function ProjectForm() {
         defaultValues: {
             project: {
                 name: "",
-                picture: undefined,
+                image: "",
                 description: "",
+                end_date: new Date(Date.now()),
+                project_goal: 0.00,
             },
             collection: {
                 name: "",
-                picture: undefined,
+                image: "",
                 description: "",
             },
             nfts: [
                 {
                     name: "",
-                    picture: "",
+                    price: 1.00,
+                    image: "",
                     description: "",
                 }
             ]
         }
     })
 
-   
+
+    const [nfts, setNfts] = useState([1])
 
 
     async function onSubmit(values: projectFormValues) {
-        console.log(values)
-        pictureCache.nfts.shift()
-        console.log(pictureCache)
+        
+        imageCache.nfts.shift()
 
+        const user = (await supabase.auth.getUser()).data.user
+
+        const projectImageExt = imageCache.project.image.name.split('.').pop()
+        const projectImagePath = `${values.project.name}-${user?.id}.${projectImageExt}`
+
+        let { error: projectImageError } = await supabase.storage.from('projects').upload(projectImagePath, imageCache.project.image)
+
+        const sphereOptions = {
+            method: 'POST',
+            body: JSON.stringify({ name: values.project.name, description: values.project.description, images: [`https://lprpwskeennxoukahtlc.supabase.co/storage/v1/object/public/projects/${projectImagePath}`]})
+          };
+        
+        const sphereProduct = await (await fetch("/sphere/createProduct", sphereOptions)).json()      
+        
+        //const tiplink = await TipLink.create()
+
+        let { data: projectData, error: projectError } = await supabase.from('projects').insert(
+            {
+                creator_id: user?.id,
+                project_name: values.project.name,
+                project_image: projectImagePath,
+                project_description: values.project.description,
+                end_date: values.project.end_date.toISOString(),
+                project_goal: values.project.project_goal,
+                //project_tiplink: tiplink.url.toString(),
+                creator_image: user?.user_metadata.avatar_url,
+                creator_name: user?.user_metadata.name,
+                sphere_product_id: sphereProduct.data.product.id
+            }
+        ).select()
+
+        const pd = projectData?.at(0)
+
+        if (rewards) {
+
+            const collectionImageExt = imageCache.collection.image.name.split('.').pop()
+            const collectionImagePath = `${values.collection?.name}-${pd?.id}.${collectionImageExt}`
+
+            let { error: collectionImageError } = await supabase.storage.from('nft_collections').upload(collectionImagePath, imageCache.collection.image)
+
+            let { data: collectionData, error: collectionError } = await supabase.from('nft_collections').insert(
+                {
+                    project_id: pd?.id,
+                    collection_name: values.collection?.name,
+                    collection_image: collectionImagePath,
+                    collection_description: values.collection?.description,
+                }
+            ).select()
+
+            const cd = collectionData?.at(0)
+            console.log(imageCache.nfts)
+            values.nfts?.forEach(async (nft) => {
+
+                const nftImage = imageCache.nfts.shift()
+                const nftImageExt = nftImage?.image.name.split('.').pop()
+                const nftImagePath = `${nft.name}-${cd?.id}.${nftImageExt}`
+
+                let { error: nftImageError } = await supabase.storage.from('nfts').upload(nftImagePath, nftImage!.image)
+                let { error: nftError } =
+                    await supabase.from('nfts').insert(
+                        {
+                            project_id: pd?.id,
+                            collection_id: cd?.id,
+                            nft_name: nft.name,
+                            nft_price: nft.price,
+                            nft_image: nftImagePath,
+                            nft_description: nft.description,
+                        }
+                    )
+            });
+
+            //CREATE CREATORS TIPLINK
+        }
+
+
+
+        //console.log(projectError)
         //let { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file)
         //router.push("/")
     }
 
-
-    const [nfts, setNfts] = useState([1])
 
     return (
         <Form {...form}>
@@ -119,7 +205,7 @@ export default function ProjectForm() {
                         {rewards &&
                             <div>
                                 <Button type="button" className="mr-2" onClick={() => { setNfts(currNfts => ([...currNfts, nfts.length + 1])) }}>Add NFT</Button>
-                                <Button type="button" onClick={() => setNfts(nfts.slice(0, -1))}>Remove NFT</Button>
+                                <Button type="button" onClick={() => { if (nfts.length > 1) { setNfts(nfts.slice(0, -1)) } }}>Remove NFT</Button>
                                 {/*<Button type="button" onClick={() => nfts.length == 0 ? console.log("PickMe") : console.log(nfts)}>Click me</Button>*/}
                             </div>
                         }
