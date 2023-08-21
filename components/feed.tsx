@@ -8,6 +8,8 @@ export default async function Feed({ name, project }: {
     project: {
         created_at: string;
         creator_id: string | null;
+        creator_image: string | null;
+        creator_name: string | null;
         end_date: string | null;
         id: number;
         project_description: string | null;
@@ -16,7 +18,7 @@ export default async function Feed({ name, project }: {
         project_image: string | null;
         project_name: string | null;
         project_num_supporters: number | null;
-        project_tiplink: string | null;
+        sphere_product_id: string | null;
         updated_at: string;
     }[] | null
 }) {

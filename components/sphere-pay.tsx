@@ -23,7 +23,8 @@ export default function SpherePayForm({ data, session }: {
         project_num_supporters: number | null;
         sphere_product_id: string | null;
         updated_at: string;
-    } | undefined, session: Session | null
+    } | undefined, 
+    session: Session | null
 }) {
 
     const formSchema = z.object({
@@ -42,7 +43,7 @@ export default function SpherePayForm({ data, session }: {
 
     async function onSubmit(values: FormValues) {
 
-        if (session == null){
+        if (session == null) {
             alert("please login")
             return
         }
