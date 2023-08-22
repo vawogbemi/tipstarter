@@ -19,21 +19,13 @@
 
 import { Resend } from 'resend';
 
-import { Keypair, LAMPORTS_PER_SOL, PublicKey, clusterApiUrl } from "@solana/web3.js";
+import { Keypair, clusterApiUrl } from "@solana/web3.js";
 import {
   ValidDepthSizePair,
   getConcurrentMerkleTreeAccountSize,
 } from "@solana/spl-account-compression";
 
 import { CreateMetadataAccountArgsV3 } from "@metaplex-foundation/mpl-token-metadata";
-
-// import custom helpers for demos
-import {
-  loadOrGenerateKeypair,
-  numberFormatter,
-  printConsoleSeparator,
-  savePublicKeyToFile,
-} from "@/tiplink/utils/helpers";
 
 // import custom helpers to mint compressed NFTs
 import { createCollection, createTree, } from "@/tiplink/utils/compression";
@@ -86,7 +78,6 @@ export default async function createCollectionAndMerkleTree({ collectionData, nf
   //const payer = loadOrGenerateKeypair("payer");
 
 
-  console.log("Payer address:", payer.keypair.publicKey.toBase58());
 
   // locally save the addresses for the demo
   //savePublicKeyToFile("userAddress", payer.keypair.publicKey);
@@ -105,11 +96,7 @@ export default async function createCollectionAndMerkleTree({ collectionData, nf
 
   // get the payer's starting balance
   initBalance = await connection.getBalance(payer.keypair.publicKey);
-  console.log(
-    "Starting account balance:",
-    numberFormatter(initBalance / LAMPORTS_PER_SOL),
-    "SOL\n",
-  );
+  
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -166,17 +153,9 @@ export default async function createCollectionAndMerkleTree({ collectionData, nf
   const storageCost = await connection.getMinimumBalanceForRentExemption(requiredSpace);
 
   // demonstrate data points for compressed NFTs
-  console.log("Space to allocate:", numberFormatter(requiredSpace), "bytes");
-  console.log("Estimated cost to allocate space:", numberFormatter(storageCost / LAMPORTS_PER_SOL));
-  console.log(
-    "Max compressed NFTs for collection:",
-    numberFormatter(Math.pow(2, maxDepthSizePair.maxDepth)),
-    "\n",
-  );
-
+  
   // ensure the payer has enough balance to create the allocate the Merkle tree
-  if (initBalance < storageCost) return console.error("Not enough SOL to allocate the merkle tree");
-  printConsoleSeparator();
+
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -265,7 +244,6 @@ export default async function createCollectionAndMerkleTree({ collectionData, nf
   const resend = new Resend(process.env.RESEND_API_KEY);
 
 
-  console.log("TOTAL PAYMENTS")
 
   totalPayments.forEach(async payment => {
 
@@ -282,7 +260,6 @@ export default async function createCollectionAndMerkleTree({ collectionData, nf
         symbol: "default",
       }
     ]
-    console.log(nftMetadatas)
 
     const str = await mintToTipLink(payer, nftMetadatas, keys)
     const userTipLink = await TipLink.fromLink(str!)
@@ -304,10 +281,4 @@ export default async function createCollectionAndMerkleTree({ collectionData, nf
   });
 
 
-  console.log(`===============================`);
-  console.log(
-    "Total cost:",
-    numberFormatter((initBalance - balance) / LAMPORTS_PER_SOL, true),
-    "SOL\n",
-  );
 }

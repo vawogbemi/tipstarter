@@ -9,12 +9,6 @@ import { PublicKey, clusterApiUrl, Transaction, SystemProgram, sendAndConfirmTra
 // import custom helpers to mint compressed NFTs
 import { WrapperConnection } from "@/tiplink/ReadApi/WrapperConnection";
 import { mintCompressedNFTIxn } from "@/tiplink/utils/compression";
-import {
-  explorerURL,
-  loadOrGenerateKeypair,
-  loadPublicKeysFromFile,
-  printConsoleSeparator,
-} from "@/tiplink/utils/helpers";
 
 // load the env variables and store the cluster RPC url
 import dotenv from "dotenv";
@@ -24,7 +18,6 @@ import { createCompressedNFTMetadata, NFTMetadata } from '@/tiplink/onChainNftMe
 import { extractSignatureFromFailedTransaction } from "@/tiplink/utils/helpers";
 
 // import fs to write the TipLink wallet URLs to a CSV file
-import fs from "fs";
 import { TipLink } from "@tiplink/api";
 
 
@@ -82,12 +75,10 @@ const createAndFundTipLink = async (
       skipPreflight: true,
     });
 
-    console.log("\nSuccessfully minted the compressed NFT!");
-    console.log(explorerURL({ txSignature, cluster: "mainnet-beta" }));
+ 
 
     return tipLink
   } catch (err) {
-    console.error("\nFailed to mint compressed NFT:", err);
 
     // log a block explorer link for the failed transaction
     await extractSignatureFromFailedTransaction(connection, err);
@@ -111,14 +102,12 @@ export default async function mintToTipLink(payer: TipLink, nftMetadatas:  NFTMe
   // generate a new keypair for use in this demo
   //const payer = loadOrGenerateKeypair("payer");
 
-  console.log("Payer address:", payer.keypair.publicKey.toBase58());
 
   // load the stored PublicKeys for ease of use
   //let keys = loadPublicKeysFromFile();
 
   // ensure the primary script was already run
-  if (!keys?.collectionMint || !keys?.treeAddress)
-    return console.warn("No local keys were found. Please run the `index` script");
+
 
   const treeAddress: PublicKey = keys.treeAddress;
   const treeAuthority: PublicKey = keys.treeAuthority;
@@ -126,12 +115,7 @@ export default async function mintToTipLink(payer: TipLink, nftMetadatas:  NFTMe
   const collectionMetadataAccount: PublicKey = keys.collectionMetadataAccount;
   const collectionMasterEditionAccount: PublicKey = keys.collectionMasterEditionAccount;
 
-  console.log("==== Local PublicKeys loaded ====");
-  console.log("Tree address:", treeAddress.toBase58());
-  console.log("Tree authority:", treeAuthority.toBase58());
-  console.log("Collection mint:", collectionMint.toBase58());
-  console.log("Collection metadata:", collectionMetadataAccount.toBase58());
-  console.log("Collection master edition:", collectionMasterEditionAccount.toBase58());
+
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -145,15 +129,12 @@ export default async function mintToTipLink(payer: TipLink, nftMetadatas:  NFTMe
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  printConsoleSeparator();
 
   const tipLink = await TipLink.create();
 
-  console.log("CREATE AND FUND")
 
 
   for (const nftMetadata of nftMetadatas) {
-    console.log(nftMetadata);
     await createAndFundTipLink(
       connection,
       payer.keypair,

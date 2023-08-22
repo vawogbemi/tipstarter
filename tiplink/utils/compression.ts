@@ -41,15 +41,13 @@ import {
     maxDepthSizePair: ValidDepthSizePair,
     canopyDepth: number = 0,
   ) {
-    console.log("Creating a new Merkle tree...");
-    console.log("treeAddress:", treeKeypair.publicKey.toBase58());
+
   
     // derive the tree's authority (PDA), owned by Bubblegum
     const [treeAuthority, _bump] = PublicKey.findProgramAddressSync(
       [treeKeypair.publicKey.toBuffer()],
       BUBBLEGUM_PROGRAM_ID,
     );
-    console.log("treeAuthority:", treeAuthority.toBase58());
   
     // allocate the tree's account on chain with the `space`
     // NOTE: this will compute the space needed to store the tree on chain (and the lamports required to store it)
@@ -97,13 +95,10 @@ import {
         },
       );
   
-      console.log("\nMerkle tree created successfully!");
-      console.log(explorerURL({ txSignature, cluster: "mainnet-beta" }));
   
       // return useful info
       return { treeAuthority, treeAddress: treeKeypair.publicKey };
     } catch (err: any) {
-      console.error("\nFailed to create merkle tree:", err);
   
       // log a block explorer link for the failed transaction
       await extractSignatureFromFailedTransaction(connection, err, );
@@ -122,7 +117,6 @@ import {
     metadataV3: CreateMetadataAccountArgsV3,
   ) {
     // create and initialize the SPL token mint
-    console.log("Creating the collection's mint...");
     const mint = await createMint(
       connection,
       payer,
@@ -133,10 +127,8 @@ import {
       // decimals - use `0` for NFTs since they are non-fungible
       0,
     );
-    console.log("Mint address:", mint.toBase58());
   
     // create the token account
-    console.log("Creating a token account...");
     const tokenAccount = await createAccount(
       connection,
       payer,
@@ -144,10 +136,8 @@ import {
       payer.publicKey,
       // undefined, undefined,
     );
-    console.log("Token account:", tokenAccount.toBase58());
   
     // mint 1 token ()
-    console.log("Minting 1 token for the collection...");
     const mintSig = await mintTo(
       connection,
       payer,
@@ -161,14 +151,12 @@ import {
       undefined,
       TOKEN_PROGRAM_ID,
     );
-    // console.log(explorerURL({ txSignature: mintSig }));
   
     // derive the PDA for the metadata account
     const [metadataAccount, _bump] = PublicKey.findProgramAddressSync(
       [Buffer.from("metadata", "utf8"), TOKEN_METADATA_PROGRAM_ID.toBuffer(), mint.toBuffer()],
       TOKEN_METADATA_PROGRAM_ID,
     );
-    console.log("Metadata account:", metadataAccount.toBase58());
   
     // create an instruction to create the metadata account
     const createMetadataIx = createCreateMetadataAccountV3Instruction(
@@ -194,7 +182,6 @@ import {
       ],
       TOKEN_METADATA_PROGRAM_ID,
     );
-    console.log("Master edition account:", masterEditionAccount.toBase58());
   
     // create an instruction to create the metadata account
     const createMasterEditionIx = createCreateMasterEditionV3Instruction(
@@ -239,10 +226,7 @@ import {
         skipPreflight: true,
       });
   
-      console.log("\nCollection successfully created!");
-      console.log(explorerURL({ txSignature, cluster: "mainnet-beta" }));
     } catch (err) {
-      console.error("\nFailed to create collection:", err);
   
       // log a block explorer link for the failed transaction
       await extractSignatureFromFailedTransaction(connection, err);

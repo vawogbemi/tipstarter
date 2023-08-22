@@ -41,12 +41,6 @@ export async function POST(req: NextRequest) {
 
     const { data: nftData } = await supabaseServer.from("nfts").select().eq("project_id", body.projectId)
     
-    console.log(totalPayments)
-    console.log(body)
-    console.log(cd)
-    console.log(nftData?.at(0))
-    console.log(pd?.tiplink)
-    
     await createCollectionAndMerkleTree({collectionData: cd, nftData: nftData, totalPayments: totalPayments, creatorTipLink: pd?.tiplink })
 
     return new Response()
