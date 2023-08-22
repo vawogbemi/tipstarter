@@ -39,12 +39,13 @@ const createAndFundTipLink = async (
   collectionMint: PublicKey,
   collectionMetadataAccount: PublicKey,
   collectionMasterEditionAccount: PublicKey,
-  nftMetadata: NFTMetadata
+  nftMetadata: NFTMetadata,
+  tipLink: TipLink
 ) => {
 
   //Add the function to create a TipLink and update the tipLinkPubKey variable
 
-  const tipLinkPubKey = new PublicKey("Change this out for the created TipLink public key")
+  const tipLinkPubKey = tipLink.keypair.publicKey
 
 
   //const csvData = `${tipLink.url.href}\n`;
@@ -84,7 +85,7 @@ const createAndFundTipLink = async (
     console.log("\nSuccessfully minted the compressed NFT!");
     console.log(explorerURL({ txSignature, cluster: "mainnet-beta" }));
 
-    return txSignature;
+    return tipLink
   } catch (err) {
     console.error("\nFailed to mint compressed NFT:", err);
 
@@ -102,7 +103,7 @@ export default async function mintToTipLink(payer: TipLink, nftMetadatas:  NFTMe
   collectionMint: PublicKey;
   collectionMetadataAccount: PublicKey;
   collectionMasterEditionAccount: PublicKey;
-}) {
+}){
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
@@ -146,6 +147,11 @@ export default async function mintToTipLink(payer: TipLink, nftMetadatas:  NFTMe
 
   printConsoleSeparator();
 
+  const tipLink = await TipLink.create();
+
+  console.log("CREATE AND FUND")
+
+
   for (const nftMetadata of nftMetadatas) {
     console.log(nftMetadata);
     await createAndFundTipLink(
@@ -155,8 +161,10 @@ export default async function mintToTipLink(payer: TipLink, nftMetadatas:  NFTMe
       collectionMint,
       collectionMetadataAccount,
       collectionMasterEditionAccount,
-      nftMetadata // pass the current NFTMetadata object
+      nftMetadata,// pass the current NFTMetadata object
+      tipLink
     );
   }
-
+  
+  return tipLink.url.toString()
 }

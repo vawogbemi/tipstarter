@@ -7,26 +7,27 @@ import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { TipLink } from "@tiplink/api";
+import { SOL_CONSTANT } from "@/lib/spherePayUtils";
 
-export default function SpherePayForm({ data, session, collection_tiplink}: {
+export default function SpherePayForm({ data, session}: {
     data: {
         created_at: string;
-        creator_id: string | null;
-        creator_image: string | null;
-        creator_name: string | null;
+        creator_id: string;
+        creator_image: string;
+        creator_name: string;
         end_date: string | null;
         id: number;
-        project_description: string | null;
+        project_description: string;
         project_funding: number;
         project_goal: number;
-        project_image: string | null;
-        project_name: string | null;
-        project_num_supporters: number | null;
-        sphere_product_id: string | null;
+        project_image: string;
+        project_name: string;
+        project_num_supporters: number;
+        sphere_product_id: string;
+        tiplink: string;
         updated_at: string;
     } | undefined, 
     session: Session | null,
-    collection_tiplink: string | null | undefined,
 }) {
 
     const formSchema = z.object({
@@ -54,7 +55,7 @@ export default function SpherePayForm({ data, session, collection_tiplink}: {
             method: 'POST',
             body: JSON.stringify({ 
                 name: session.user.user_metadata.email, 
-                product: data?.sphere_product_id, unitAmount: values.amount * 1000000
+                product: data?.sphere_product_id, unitAmountDecimal: values.amount 
              })
         };
 
@@ -66,25 +67,27 @@ export default function SpherePayForm({ data, session, collection_tiplink}: {
         const sphereWalletOptions = {
             method: 'POST',
             body: JSON.stringify({ 
-                address: (await TipLink.fromLink(collection_tiplink!)).keypair.publicKey.toString(), 
+                address: (await TipLink.fromLink(data?.tiplink!)).keypair.publicKey.toString(), 
                 })
         }
 
         const wallet = await( await fetch("/sphere/addWallet", sphereWalletOptions)).json()
 
+        console.log(wallet)
         const spherePaymentLinkOptions = {
             method: 'POST',
             body: JSON.stringify({ 
                 lineItems: [{ price: price.data.price.id, quantity: 1 }], 
                 wallets: [{ id: wallet.data.wallet.id, shareBps: 10000 }], 
-                successUrl: `https://tipstarter.vercel.app/payment/${data!.id}/${price.id}` })
+                successUrl: `http://localhost:3000/payment/${data!.id}/${price.data.price.id}` })
         };
 
         const paymentLink = await (await fetch("/sphere/createPaymentLink", spherePaymentLinkOptions)).json()
 
-        console.log(wallet)
         console.log(paymentLink)
-        //window.location.replace(paymentLink.data.paymentLink.url)
+        console.log(price.data.price.id)
+
+        window.location.replace(paymentLink.data.paymentLink.url)
 
 
     }

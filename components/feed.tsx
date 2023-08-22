@@ -7,7 +7,7 @@ export default async function Feed({ name, project }: {
     name: string | null,
     project: {
         created_at: string;
-        creator_id: string | null;
+        creator_id: string;
         creator_image: string | null;
         creator_name: string | null;
         end_date: string | null;
@@ -20,10 +20,11 @@ export default async function Feed({ name, project }: {
         project_num_supporters: number | null;
         sphere_product_id: string | null;
         updated_at: string;
+        tiplink: string;
     }[] | null
 }) {
 
-
+    project?.reverse()
     return (
         <div>
             <h1 className="text-3xl font-helvetica pl-5">{name}</h1>

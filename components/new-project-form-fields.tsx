@@ -48,7 +48,7 @@ export function ProjectFormFields({ form }: {
                         <FormControl>
                             <Input placeholder="shadcn" {...field} />
                         </FormControl>
-                        <FormDescription>This is your public display name.</FormDescription>
+                        <FormDescription></FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -62,7 +62,7 @@ export function ProjectFormFields({ form }: {
                         <FormControl>
                             <Input type="file" {...field} onChange={(e) => { field.onChange(e); (e.target.files ? imageCache.project.image = e.target.files[0] : []) }} />
                         </FormControl>
-                        <FormDescription>This is your public display name.</FormDescription>
+                        <FormDescription></FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -76,7 +76,7 @@ export function ProjectFormFields({ form }: {
                         <FormControl>
                             <Textarea placeholder="shadcn" {...field} />
                         </FormControl>
-                        <FormDescription>This is your public display name.</FormDescription>
+                        <FormDescription></FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -86,7 +86,7 @@ export function ProjectFormFields({ form }: {
                 name="project.end_date"
                 render={({ field }) => (
                     <FormItem className="flex flex-col">
-                        <FormLabel>End Date</FormLabel>
+                        <FormLabel>Project End Date</FormLabel>
                         <Popover>
                             <PopoverTrigger asChild>
                                 <FormControl>
@@ -119,7 +119,6 @@ export function ProjectFormFields({ form }: {
                             </PopoverContent>
                         </Popover>
                         <FormDescription>
-                            Your date of birth is used to calculate your age.
                         </FormDescription>
                         <FormMessage />
                     </FormItem>
@@ -130,11 +129,11 @@ export function ProjectFormFields({ form }: {
                 name="project.project_goal"
                 render={({ field }) => (
                     <FormItem className="w-96">
-                        <FormLabel>Project Goal</FormLabel>
+                        <FormLabel>Project Funding Goal - sol</FormLabel>
                         <FormControl>
                             <Input placeholder="shadcn" {...field} />
                         </FormControl>
-                        <FormDescription>This is your public display name.</FormDescription>
+                        <FormDescription></FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -172,11 +171,11 @@ export function CollectionFormFields({ form }: {
                 name="collection.name"
                 render={({ field }) => (
                     <FormItem className="w-96 mt-5">
-                        <FormLabel>Collection Name</FormLabel>
+                        <FormLabel>NFT Collection Name</FormLabel>
                         <FormControl>
                             <Input placeholder="shadcn" {...field} />
                         </FormControl>
-                        <FormDescription>This is your public display name.</FormDescription>
+                        <FormDescription></FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -186,11 +185,11 @@ export function CollectionFormFields({ form }: {
                 name="collection.image"
                 render={({ field }) => (
                     <FormItem className="w-96">
-                        <FormLabel>Collection Image</FormLabel>
+                        <FormLabel>NFT Collection Image</FormLabel>
                         <FormControl>
                             <Input type="file" {...field} onChange={(e) => { field.onChange(e); (e.target.files ? imageCache.collection.image = e.target.files[0] : []) }} />
                         </FormControl>
-                        <FormDescription>This is your public display name.</FormDescription>
+                        <FormDescription></FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -200,11 +199,11 @@ export function CollectionFormFields({ form }: {
                 name="collection.description"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Collection Description</FormLabel>
+                        <FormLabel>NFT Collection Description</FormLabel>
                         <FormControl>
                             <Textarea placeholder="shadcn" {...field} />
                         </FormControl>
-                        <FormDescription>This is your public display name.</FormDescription>
+                        <FormDescription></FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -246,7 +245,7 @@ export function NFTFormFields({ form, instance }: {
                         <FormControl>
                             <Input placeholder="shadcn" {...field} />
                         </FormControl>
-                        <FormDescription>This is your public display name.</FormDescription>
+                        <FormDescription></FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -256,11 +255,11 @@ export function NFTFormFields({ form, instance }: {
                 name={`nfts.${instance}.price`}
                 render={({ field }) => (
                     <FormItem className="w-96">
-                        <FormLabel>NFT Price</FormLabel>
+                        <FormLabel>NFT Price - sol</FormLabel>
                         <FormControl>
                             <Input placeholder="shadcn" {...field} />
                         </FormControl>
-                        <FormDescription>This is your public display name.</FormDescription>
+                        <FormDescription></FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -274,7 +273,7 @@ export function NFTFormFields({ form, instance }: {
                         <FormControl>
                             <Input type="file" {...field} onChange={(e) => { field.onChange(e); (e.target.files ? imageCache.nfts.push({ image: e.target.files[0] }) : []) }} />
                         </FormControl>
-                        <FormDescription>This is your public display name.</FormDescription>
+                        <FormDescription></FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -288,7 +287,7 @@ export function NFTFormFields({ form, instance }: {
                         <FormControl>
                             <Textarea placeholder="shadcn" {...field} />
                         </FormControl>
-                        <FormDescription>This is your public display name.</FormDescription>
+                        <FormDescription></FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}

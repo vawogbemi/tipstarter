@@ -14,34 +14,41 @@ export async function POST(req: NextRequest) {
         .filter((key: { status: string; }) => key.status === "succeeded")
         .map((key: { paymentLink: { lineItems: { price: any; }[]; }; }) => key.paymentLink.lineItems[0].price)
         .filter((key: { product: { id: any; }; }) => key.product.id === body.productId)
-        .map((key: { name: any; unitAmount: any; }) => ({ name: key.name, unitAmount: Number((key.unitAmount/1000000)) }))
+        .map((key: { name: any; unitAmountDecimal: any; }) => ({ name: key.name, unitAmountDecimal: Number((key.unitAmountDecimal)) }))
 
 
     const totalPayments: any[] = []
 
     
-    filteredPayments.reduce((res: { [x: string]: { name: any, unitAmount: any; }; }, value: { name: string | number; unitAmount: any; }) => {
+    filteredPayments.reduce((res: { [x: string]: { name: any, unitAmountDecimal: any; }; }, value: { name: string | number; unitAmountDecimal: any; }) => {
         if (!res[value.name]) {
-            res[value.name] = { name: value.name, unitAmount: 0 };
+            res[value.name] = { name: value.name, unitAmountDecimal: 0 };
             totalPayments.push(res[value.name])
         }
-        res[value.name].unitAmount += value.unitAmount;
+        res[value.name].unitAmountDecimal += value.unitAmountDecimal;
         return res;
         }, {});
     
-    
-
     const supabaseServer = createClientComponentClient<Database>({ supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!, supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! });
     
-    const { data: collectionData } = await supabaseServer.from("nft_collections").select().eq("id", body.projectId)
+    const { data: projectData } = await supabaseServer.from("projects").select().eq("id", body.projectId)
+
+    const pd = projectData?.at(0)
+
+    const { data: collectionData } = await supabaseServer.from("nft_collections").select().eq("project_id", body.projectId)
     
     const cd = collectionData?.at(0)
 
-    const { data: nftData } = await supabaseServer.from("nfts").select().eq("id", body.projectId)
+    const { data: nftData } = await supabaseServer.from("nfts").select().eq("project_id", body.projectId)
+    
+    console.log(totalPayments)
+    console.log(body)
+    console.log(cd)
+    console.log(nftData?.at(0))
+    console.log(pd?.tiplink)
+    
+    await createCollectionAndMerkleTree({collectionData: cd, nftData: nftData, totalPayments: totalPayments, creatorTipLink: pd?.tiplink })
 
-    createCollectionAndMerkleTree({collectionData: cd, nftData: nftData, totalPayments: totalPayments})
+    return new Response()
 
-    return NextResponse.json(
-        body
-    )
 }

@@ -1,4 +1,4 @@
-import { createPaymentLink, createPrice } from '@/lib/spherePayUtils'
+import { createPaymentLink } from '@/lib/spherePayUtils'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
