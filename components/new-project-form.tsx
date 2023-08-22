@@ -142,7 +142,8 @@ export default function ProjectForm() {
             let { error: collectionImageError } = await supabase.storage.from('nft_collections').upload(collectionImagePath, imageCache.collection.image)
 
             let { data: collectionData, error: collectionError } = await supabase.from('nft_collections').insert(
-                {
+                {   
+                    //@ts-ignore
                     project_id: pd?.id,
                     collection_name: values.collection?.name,
                     collection_image: collectionImagePath,
