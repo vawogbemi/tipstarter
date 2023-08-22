@@ -11,32 +11,29 @@ export interface Database {
     Tables: {
       nft_collections: {
         Row: {
-          collection_description: string | null
-          collection_image: string | null
-          collection_name: string | null
-          collection_tiplink: string | null
+          collection_description: string
+          collection_image: string
+          collection_name: string
           created_at: string
-          creator_email: string | null
+          creator_email: string
           id: number
           project_id: number | null
         }
         Insert: {
-          collection_description?: string | null
-          collection_image?: string | null
-          collection_name?: string | null
-          collection_tiplink?: string | null
+          collection_description: string
+          collection_image: string
+          collection_name: string
           created_at?: string
-          creator_email?: string | null
+          creator_email: string
           id?: number
           project_id?: number | null
         }
         Update: {
-          collection_description?: string | null
-          collection_image?: string | null
-          collection_name?: string | null
-          collection_tiplink?: string | null
+          collection_description?: string
+          collection_image?: string
+          collection_name?: string
           created_at?: string
-          creator_email?: string | null
+          creator_email?: string
           id?: number
           project_id?: number | null
         }
@@ -54,30 +51,30 @@ export interface Database {
           collection_id: number | null
           created_at: string
           id: number
-          nft_description: string | null
-          nft_image: string | null
-          nft_name: string | null
-          nft_price: number | null
+          nft_description: string
+          nft_image: string
+          nft_name: string
+          nft_price: number
           project_id: number | null
         }
         Insert: {
           collection_id?: number | null
           created_at?: string
           id?: number
-          nft_description?: string | null
-          nft_image?: string | null
-          nft_name?: string | null
-          nft_price?: number | null
+          nft_description: string
+          nft_image: string
+          nft_name: string
+          nft_price: number
           project_id?: number | null
         }
         Update: {
           collection_id?: number | null
           created_at?: string
           id?: number
-          nft_description?: string | null
-          nft_image?: string | null
-          nft_name?: string | null
-          nft_price?: number | null
+          nft_description?: string
+          nft_image?: string
+          nft_name?: string
+          nft_price?: number
           project_id?: number | null
         }
         Relationships: [
@@ -132,50 +129,53 @@ export interface Database {
       projects: {
         Row: {
           created_at: string
-          creator_id: string | null
-          creator_image: string | null
-          creator_name: string | null
+          creator_id: string
+          creator_image: string
+          creator_name: string
           end_date: string | null
           id: number
-          project_description: string | null
+          project_description: string
           project_funding: number
           project_goal: number
-          project_image: string | null
-          project_name: string | null
-          project_num_supporters: number | null
-          sphere_product_id: string | null
+          project_image: string
+          project_name: string
+          project_num_supporters: number
+          sphere_product_id: string
+          tiplink: string
           updated_at: string
         }
         Insert: {
           created_at?: string
-          creator_id?: string | null
-          creator_image?: string | null
-          creator_name?: string | null
+          creator_id: string
+          creator_image: string
+          creator_name: string
           end_date?: string | null
           id?: number
-          project_description?: string | null
+          project_description: string
           project_funding?: number
           project_goal?: number
-          project_image?: string | null
-          project_name?: string | null
-          project_num_supporters?: number | null
-          sphere_product_id?: string | null
+          project_image: string
+          project_name: string
+          project_num_supporters?: number
+          sphere_product_id: string
+          tiplink?: string
           updated_at?: string
         }
         Update: {
           created_at?: string
-          creator_id?: string | null
-          creator_image?: string | null
-          creator_name?: string | null
+          creator_id?: string
+          creator_image?: string
+          creator_name?: string
           end_date?: string | null
           id?: number
-          project_description?: string | null
+          project_description?: string
           project_funding?: number
           project_goal?: number
-          project_image?: string | null
-          project_name?: string | null
-          project_num_supporters?: number | null
-          sphere_product_id?: string | null
+          project_image?: string
+          project_name?: string
+          project_num_supporters?: number
+          sphere_product_id?: string
+          tiplink?: string
           updated_at?: string
         }
         Relationships: [

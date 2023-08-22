@@ -17,6 +17,8 @@
  * - mint compressed NFTs to the tree (This is done in the mintToTipLink.ts script)
  */
 
+import { Resend } from 'resend';
+
 import { Keypair, LAMPORTS_PER_SOL, PublicKey, clusterApiUrl } from "@solana/web3.js";
 import {
   ValidDepthSizePair,
@@ -50,14 +52,13 @@ let initBalance: number, balance: number;
 
 
 
-export default async function createCollectionAndMerkleTree({ collectionData, nftData, totalPayments }: {
+export default async function createCollectionAndMerkleTree({ collectionData, nftData, totalPayments, creatorTipLink }: {
   collectionData: {
-    collection_description: string | null;
-    collection_image: string | null;
-    collection_name: string | null;
-    collection_tiplink: string | null;
+    collection_description: string;
+    collection_image: string;
+    collection_name: string;
     created_at: string;
-    creator_email: string | null;
+    creator_email: string;
     id: number;
     project_id: number | null;
   } | undefined,
@@ -66,25 +67,26 @@ export default async function createCollectionAndMerkleTree({ collectionData, nf
     collection_id: number | null;
     created_at: string;
     id: number;
-    nft_description: string | null;
-    nft_image: string | null;
-    nft_name: string | null;
-    nft_price: number | null;
+    nft_description: string;
+    nft_image: string;
+    nft_name: string;
+    nft_price: number;
     project_id: number | null;
   }[] | null,
 
-  totalPayments: { name: string, unitAmount: number }[]
+  totalPayments: { name: string, unitAmountDecimal: number }[],
+  creatorTipLink: string | undefined
 }) {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  const payer = await TipLink.fromLink(collectionData?.collection_tiplink!)
+  const payer = await TipLink.fromLink(creatorTipLink ? creatorTipLink : "")
 
   // load your kepair locally from the filesystem after running the createWallet.ts script)
   //const payer = loadOrGenerateKeypair("payer");
 
 
-  //console.log("Payer address:", payer.keypair.publicKey.toBase58());
+  console.log("Payer address:", payer.keypair.publicKey.toBase58());
 
   // locally save the addresses for the demo
   //savePublicKeyToFile("userAddress", payer.keypair.publicKey);
@@ -117,12 +119,12 @@ export default async function createCollectionAndMerkleTree({ collectionData, nf
   */
   const maxDepthSizePair: ValidDepthSizePair = {
     // max=8 nodes
-    maxDepth: 3,
-    maxBufferSize: 8,
+    //maxDepth: 3,
+    //maxBufferSize: 8,
 
-    // max=32 nodes
-    // maxDepth: 5,
-    // maxBufferSize: 8,
+    //max=32 nodes
+    maxDepth: 5,
+    maxBufferSize: 8,
 
     // max=16,384 nodes
     //  maxDepth: 14,
@@ -202,13 +204,14 @@ export default async function createCollectionAndMerkleTree({ collectionData, nf
     (nothing special about compression here)
   */
   // define the metadata to be used for creating the NFT collection
+  "https://lprpwskeennxoukahtlc.supabase.co/storage/v1/object/public/nft_collections/${collectionData?.collection_image}"
   const collectionMetadataV3: CreateMetadataAccountArgsV3 = {
     data: {
-      name: "Testing Compression",
-      symbol: "TESTooor",
+      name: collectionData?.collection_name!,
+      symbol: "Tipstarter",
       // specific json metadata for the collection
       //https://shdw-drive.genesysgo.net/91uEGv2pFyc3nZPgya6L41FKaoD6GoTcGDHqhokHe7Hw/metaURI.json
-      uri: `https://api.val.town/v1/run/vawogbemi.collectionMetadataV3?args=["${collectionData?.collection_name}","${collectionData?.collection_description}","${collectionData?.collection_image}","${payer.keypair.publicKey.toBase58()}"]`,
+      uri: `https://api.val.town/v1/run/vawogbemi.cV3?args=["${collectionData?.collection_name}","https://res.cloudinary.com/demonicirfan/image/upload/v1692125694/cover_img_1_qdnmpb.png","${payer.keypair.publicKey.toBase58()}"]`,
       sellerFeeBasisPoints: 100,
       creators: [
         {
@@ -258,28 +261,18 @@ export default async function createCollectionAndMerkleTree({ collectionData, nf
 
   // fetch the payer's final balance
   balance = await connection.getBalance(payer.keypair.publicKey);
-  
 
-  const nftMetadatas: NFTMetadata[] = nftData ? nftData?.filter(key => key.nft_price).map(
-    key => ({
-      name: key.nft_name ? key.nft_name : "no name provided",
-      uri: `https://api.val.town/v1/run/vawogbemi.nftMetadata?args=["${key.nft_name}","${key.nft_description}","${key.nft_image}"]`,
-      symbol: "Tipstarter",
-    })
-  ) : [
-    {
-      name: "default",
-      uri: "default",
-      symbol: "default",
-    }
-  ]
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
-  totalPayments.forEach(payment => {
 
-    const nftMetadatas: NFTMetadata[] = nftData? nftData?.filter(key => payment.unitAmount >= (key.nft_price ? key.nft_price : 0)).map(
+  console.log("TOTAL PAYMENTS")
+
+  totalPayments.forEach(async payment => {
+
+    const nftMetadatas: NFTMetadata[] = nftData ? nftData?.filter(key => payment.unitAmountDecimal >= (key.nft_price ? key.nft_price : 0)).map(
       key => ({
         name: key.nft_name ? key.nft_name : "no name provided",
-        uri: `https://api.val.town/v1/run/vawogbemi.nftMetadata?args=["${key.nft_name}","${key.nft_description}","${key.nft_image}"]`,
+        uri: `https://api.val.town/v1/run/vawogbemi.nft?args=["${key.nft_name}","${key.nft_description}","https://lprpwskeennxoukahtlc.supabase.co/storage/v1/object/public/nfts/${key.nft_image}"]`,
         symbol: "Tipstarter",
       })
     ) : [
@@ -289,11 +282,26 @@ export default async function createCollectionAndMerkleTree({ collectionData, nf
         symbol: "default",
       }
     ]
+    console.log(nftMetadatas)
 
-    mintToTipLink(payer, nftMetadatas, keys)
+    const str = await mintToTipLink(payer, nftMetadatas, keys)
+    const userTipLink = await TipLink.fromLink(str!)
+
+    resend.emails.send({
+      from: 'onboarding@resend.dev',
+      to: payment.name,
+      subject: `Tipstarter ${collectionData?.collection_name} Supporter Wallet`,
+      html: `<p>Congrats on your <strong>tiplink: ${userTipLink.url.toString()}</strong>!</p> `
+    });
+
   })
 
-
+  resend.emails.send({
+    from: 'onboarding@resend.dev',
+    to: collectionData?.creator_email!,
+    subject: `Tipstarter ${collectionData?.collection_name} Creator Wallet`,
+    html: `<p>Congrats on your <strong>tiplink: ${payer.url.toString()}</strong>!</p>`
+  });
 
 
   console.log(`===============================`);

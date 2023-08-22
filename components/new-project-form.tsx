@@ -113,10 +113,11 @@ export default function ProjectForm() {
         
         const sphereProduct = await (await fetch("/sphere/createProduct", sphereOptions)).json()      
         
+        const tiplink = await TipLink.create()
 
         let { data: projectData, error: projectError } = await supabase.from('projects').insert(
             {
-                creator_id: user?.id,
+                creator_id: user?.id!,
                 project_name: values.project.name,
                 project_image: projectImagePath,
                 project_description: values.project.description,
@@ -124,13 +125,14 @@ export default function ProjectForm() {
                 project_goal: values.project.project_goal,
                 creator_image: user?.user_metadata.avatar_url,
                 creator_name: user?.user_metadata.name,
-                sphere_product_id: sphereProduct.data.product.id
+                sphere_product_id: sphereProduct.data.product.id,
+                tiplink: tiplink.url.toString(),
+
             }
         ).select()
 
         const pd = projectData?.at(0)
 
-        const tiplink = await TipLink.create()
 
         if (rewards) {
 
@@ -145,7 +147,6 @@ export default function ProjectForm() {
                     collection_name: values.collection?.name,
                     collection_image: collectionImagePath,
                     collection_description: values.collection?.description,
-                    collection_tiplink: tiplink.url.toString(),
                     creator_email: user?.user_metadata.email,
                 }
             ).select()
@@ -179,7 +180,7 @@ export default function ProjectForm() {
 
         //console.log(projectError)
         //let { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file)
-        //router.push("/")
+        router.push("/")
     }
 
 

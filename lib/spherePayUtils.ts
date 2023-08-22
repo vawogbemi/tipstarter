@@ -27,7 +27,7 @@ export async function getProduct(id: string){
     .then(response => response.json())
 }
 
-export async function createPrice(name:string, product: string, unitAmount: number) {
+export async function createPrice(name:string, product: string, unitAmountDecimal: number) {
   const options = {
     method: 'POST',
     headers: {
@@ -38,7 +38,7 @@ export async function createPrice(name:string, product: string, unitAmount: numb
     body: JSON.stringify({
       name: name,
       product: product,
-      currency: "sol", unitAmount: unitAmount, 
+      currency: "sol", unitAmountDecimal: unitAmountDecimal, 
     })
   };
 
@@ -115,4 +115,4 @@ export async function allPayments(){
     .then(response => response.json())
 }
 
-
+export const SOL_CONSTANT = 1000000000

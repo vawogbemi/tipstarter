@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { createServerSupabaseClient } from '@/lib/supabaseUtils';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/types/supabase'
-import { createPaymentLink, createPrice, createProduct } from '@/lib/spherePayUtils';
 
 
 export default async function Home() {
+
+
 
   const supabase = createServerSupabaseClient()
   const supabaseServer = createClientComponentClient<Database>({ supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!, supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! });
@@ -25,7 +26,7 @@ export default async function Home() {
   const tp = "https://tiplink.io/i#238AKcwZdwit8vDmR"
 
   let { data } = await supabaseServer.from("projects").select()
-  
+
   const options = {
     method: 'POST',
     headers: {
@@ -33,23 +34,11 @@ export default async function Home() {
       'content-type': 'application/json',
       authorization: `Bearer ${process.env.SPHERE_API_KEY}`
     },
-    body: JSON.stringify({ name: "name", description: "description", images: []})
+    body: JSON.stringify({ name: "name", description: "description", images: [] })
   };
 
-   await fetch('https://api.spherepay.co/v1/product', options)
+  await fetch('https://api.spherepay.co/v1/product', options)
     .then(response => response.json())
- /*
-  const price = await createPrice("b", product.data.product.id!, 1, 0)
-
-  const paymentLink = await createPaymentLink("c", [{ price: price.data.price.id, quantity: 3}])
-  //console.log(product)
-  //console.log(price.data.price.product)
-  console.log(price)
-  console.log("------------------")
-  console.log(price.data.price.id)
-  console.log("------------------")
-  console.log(paymentLink)*/
-
 
   return (
     <div>
@@ -57,6 +46,15 @@ export default async function Home() {
         <MainNav session={session} />
       </div>
       <div className='mt-5'>
+        {session ?
+
+          <></> : 
+          <div className='flex flex-wrap'>
+          <p className='md:text-8xl ml-3 text-helvetica'> Raise crypto funds for your project, no wallet needed </p> 
+          <p className='md:text-8xl text-right my-5 mr-3 text-helvetica'>Get Nfts for supporting your favourite projects</p>
+          </div>
+
+          }
         <Feed name={"Feed"} project={data} />
       </div>
     </div>

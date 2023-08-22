@@ -65,8 +65,8 @@ export default async function Page({ params }: { params: { id: string } }) {
                     </CardFooter>
                 </Card>
                 <div className='flex mt-2'>
-                    <SpherePayForm collection_tiplink={cd?.collection_tiplink} session={session} data={pd} />
-                    <p className='mt-10 ml-auto text-3xl font-helvetica'> ${pd?.project_funding}/{pd?.project_goal}</p>
+                    <SpherePayForm session={session} data={pd} />
+                    <p className='mt-10 ml-auto text-3xl font-helvetica'> {pd?.project_funding}/{pd?.project_goal} sol</p>
                 </div>
                 <Progress className='my-5' value={(pd?.project_funding! / pd?.project_goal!) * 100} />
                 {cd &&

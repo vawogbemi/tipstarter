@@ -37,6 +37,10 @@ export default function DoomsDayButton({ data }: {
 
         console.log(theEnd)
 
+        alert(
+            `Since it's a hackathon projects it's very wip: I don't disable or delete projects after 
+            they end so press this button wisely it takes money from the fund wallet. Also, try to wait 5 mins before running this again.`)
+
     }
 
     return (
