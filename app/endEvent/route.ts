@@ -4,6 +4,8 @@ import { Database } from "@/types/supabase";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = 'edge'; // 'nodejs' is the default
+
 export async function POST(req: NextRequest) {
 
     const body = await req.json();
