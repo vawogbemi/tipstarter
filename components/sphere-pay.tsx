@@ -79,7 +79,7 @@ export default function SpherePayForm({ data, session}: {
             body: JSON.stringify({ 
                 lineItems: [{ price: price.data.price.id, quantity: 1 }], 
                 wallets: [{ id: wallet.data.wallet.id, shareBps: 10000 }], 
-                successUrl: `http://localhost:3000/payment/${data!.id}/${price.data.price.id}` })
+                successUrl: `https://tipstarter.vercel.app/payment/${data!.id}/${price.data.price.id}` })
         };
 
         const paymentLink = await (await fetch("/sphere/createPaymentLink", spherePaymentLinkOptions)).json()
