@@ -24,7 +24,7 @@ export default async function Feed({ name, project }: {
     }[] | null
 }) {
 
-
+    project?.reverse()
     return (
         <div>
             <h1 className="text-3xl font-helvetica pl-5">{name}</h1>
